@@ -65,6 +65,7 @@ def test_compute_map_stats_keys():
     assert 'event_count' in stats
     assert 'total_acres_fmt' in stats
     assert 'pct_high_fmt' in stats
+    assert 'year_range' in stats
 
 
 def test_compute_map_stats_values():
