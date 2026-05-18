@@ -6,6 +6,7 @@ import streamlit.components.v1 as components
 
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary.csv')
+SAMPLE_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary_sample.csv')
 HERO_PATH = os.path.join(os.path.dirname(__file__), '..', 'components', 'story_hero.html')
 SECTIONS_PATH = os.path.join(os.path.dirname(__file__), '..', 'components', 'story_sections.html')
 
@@ -73,15 +74,13 @@ def build_trend_chart_html(df: pd.DataFrame) -> str:
 def load_data() -> pd.DataFrame:
     if os.path.exists(DATA_PATH):
         return pd.read_csv(DATA_PATH)
-    sample_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary_sample.csv')
-    if os.path.exists(sample_path):
-        return pd.read_csv(sample_path)
+    if os.path.exists(SAMPLE_DATA_PATH):
+        return pd.read_csv(SAMPLE_DATA_PATH)
     return pd.DataFrame()
 
 
 def render_story():
-    sample_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary_sample.csv')
-    if not os.path.exists(DATA_PATH) and not os.path.exists(sample_path):
+    if not os.path.exists(DATA_PATH) and not os.path.exists(SAMPLE_DATA_PATH):
         st.error("Data file not found. Run `python scripts/preprocess_data.py` first.")
         return
 

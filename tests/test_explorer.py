@@ -1,6 +1,4 @@
-import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
+import os
 import pandas as pd
 import pytest
 from pages.explorer import filter_events, severity_color, format_acres, compute_map_stats
