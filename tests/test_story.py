@@ -51,3 +51,12 @@ def test_compute_story_stats_values():
     assert stats['year_range'] == '1990\u20132020'
     # 1 of 3 events is High
     assert stats['pct_high_severity_fmt'] == '33%'
+
+
+def test_build_trend_chart_html_returns_html_string():
+    from pages.story import build_trend_chart_html
+    df = _sample_df()
+    html = build_trend_chart_html(df)
+    assert isinstance(html, str)
+    assert '<div' in html
+    assert 'plotly' in html.lower()

@@ -32,7 +32,7 @@ def compute_story_stats(df: pd.DataFrame) -> dict:
         total_acres_fmt = f"{total_acres / 1_000:.0f}K"
 
     event_count_fmt = f"{len(df):,}"
-    pct_high = len(df[df['severity'] == 'High']) / len(df) * 100
+    pct_high = (len(df[df['severity'] == 'High']) / len(df) * 100) if len(df) > 0 else 0.0
     pct_high_severity_fmt = f"{pct_high:.0f}%"
     year_range = f"{df['year'].min()}\u2013{df['year'].max()}"
 
@@ -91,6 +91,7 @@ def render_story():
         event_count=stats['event_count_fmt'],
         pct_high_severity=stats['pct_high_severity_fmt'],
         year_range=stats['year_range'],
+        year_range_label=stats['year_range'],
     )
     components.html(hero_html, height=420, scrolling=False)
 
