@@ -3,18 +3,20 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 import streamlit.components.v1 as components
+from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH
 
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary.csv')
-SAMPLE_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary_sample.csv')
 HERO_PATH = os.path.join(os.path.dirname(__file__), '..', 'components', 'story_hero.html')
 SECTIONS_PATH = os.path.join(os.path.dirname(__file__), '..', 'components', 'story_sections.html')
 
 
 def load_template(path: str) -> str:
     """Read an HTML template file and return its contents as a string."""
-    with open(path, 'r', encoding='utf-8') as f:
-        return f.read()
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        return ""
 
 
 def inject_stats(template: str, **kwargs) -> str:
@@ -70,15 +72,6 @@ def build_trend_chart_html(df: pd.DataFrame) -> str:
     return fig.to_html(include_plotlyjs='cdn', full_html=False, config={'displayModeBar': False})
 
 
-@st.cache_data
-def load_data() -> pd.DataFrame:
-    if os.path.exists(DATA_PATH):
-        return pd.read_csv(DATA_PATH)
-    if os.path.exists(SAMPLE_DATA_PATH):
-        return pd.read_csv(SAMPLE_DATA_PATH)
-    return pd.DataFrame()
-
-
 def render_story():
     if not os.path.exists(DATA_PATH) and not os.path.exists(SAMPLE_DATA_PATH):
         st.error("Data file not found. Run `python scripts/preprocess_data.py` first.")
@@ -90,6 +83,12 @@ def render_story():
 
     # Render hero section
     hero_html = load_template(HERO_PATH)
+    sections_html = load_template(SECTIONS_PATH)
+
+    if not hero_html or not sections_html:
+        st.error("Story template files not found. Check the components/ directory.")
+        return
+
     hero_html = inject_stats(
         hero_html,
         total_acres=stats['total_acres_fmt'],
@@ -101,6 +100,5 @@ def render_story():
     components.html(hero_html, height=420, scrolling=False)
 
     # Render narrative sections with embedded trend chart
-    sections_html = load_template(SECTIONS_PATH)
     sections_html = inject_stats(sections_html, trend_chart=trend_chart_html)
-    components.html(sections_html, height=1100, scrolling=True)
+    components.html(sections_html, height=1400, scrolling=True)

@@ -3,9 +3,8 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary.csv')
-SAMPLE_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary_sample.csv')
 REPORT_PATH = os.path.join(os.path.dirname(__file__), '..', 'src', 'Report.pdf')
 
 
@@ -41,15 +40,6 @@ def compute_research_stats(df: pd.DataFrame) -> dict:
         'year_min': int(df['year'].min()) if len(df) > 0 else 0,
         'year_max': int(df['year'].max()) if len(df) > 0 else 0,
     }
-
-
-@st.cache_data
-def load_data() -> pd.DataFrame:
-    if os.path.exists(DATA_PATH):
-        return pd.read_csv(DATA_PATH)
-    if os.path.exists(SAMPLE_DATA_PATH):
-        return pd.read_csv(SAMPLE_DATA_PATH)
-    return pd.DataFrame()
 
 
 def render_research():
