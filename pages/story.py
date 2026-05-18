@@ -60,14 +60,14 @@ def build_trend_chart_html(df: pd.DataFrame) -> str:
         title='',
     )
     fig.update_layout(
-        paper_bgcolor='#111',
-        plot_bgcolor='#111',
-        font_color='#9ca3af',
+        paper_bgcolor='#ffffff',
+        plot_bgcolor='#f8fafc',
+        font_color='#374151',
         coloraxis_showscale=False,
         margin=dict(l=40, r=20, t=10, b=40),
         height=280,
         xaxis=dict(showgrid=False, tickfont=dict(color='#6b7280')),
-        yaxis=dict(showgrid=True, gridcolor='#1e293b', tickfont=dict(color='#6b7280')),
+        yaxis=dict(showgrid=True, gridcolor='#e2e8f0', tickfont=dict(color='#6b7280')),
     )
     return fig.to_html(include_plotlyjs='cdn', full_html=False, config={'displayModeBar': False})
 

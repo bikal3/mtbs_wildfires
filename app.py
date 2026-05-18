@@ -7,22 +7,32 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Initialise theme state
-if 'dark_mode' not in st.session_state:
-    st.session_state.dark_mode = True
+# ── Global CSS tweaks (light base from config.toml handles the rest) ──────────
+st.markdown("""
+<style>
+[data-testid="stHeader"] { border-bottom: 1px solid #e2e8f0; }
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    background-color: #f8fafc;
+    padding: 8px 16px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+.stTabs [data-baseweb="tab"] {
+    color: #6b7280;
+    background-color: transparent;
+    border-radius: 4px 4px 0 0;
+    padding: 8px 24px;
+    font-weight: 600;
+    font-size: 14px;
+}
+.stTabs [aria-selected="true"] {
+    background-color: #ffffff !important;
+    color: #f97316 !important;
+    border-bottom: 2px solid #f97316;
+}
+</style>
+""", unsafe_allow_html=True)
 
-from utils.theme import inject_css
-inject_css()
-
-# ── Theme toggle (top-right) ──────────────────────────────────────────────────
-_, toggle_col = st.columns([0.88, 0.12])
-with toggle_col:
-    new_dark = st.toggle("Dark mode", value=st.session_state.dark_mode, key="theme_toggle")
-    if new_dark != st.session_state.dark_mode:
-        st.session_state.dark_mode = new_dark
-        st.rerun()
-
-# ── Tabs ──────────────────────────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["🔥  Story", "🔬  Research", "🗺  Explorer"])
 
 with tab1:
