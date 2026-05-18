@@ -71,11 +71,17 @@ def build_trend_chart_html(df: pd.DataFrame) -> str:
 
 @st.cache_data
 def load_data() -> pd.DataFrame:
-    return pd.read_csv(DATA_PATH)
+    if os.path.exists(DATA_PATH):
+        return pd.read_csv(DATA_PATH)
+    sample_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary_sample.csv')
+    if os.path.exists(sample_path):
+        return pd.read_csv(sample_path)
+    return pd.DataFrame()
 
 
 def render_story():
-    if not os.path.exists(DATA_PATH):
+    sample_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'mtbs_ca_summary_sample.csv')
+    if not os.path.exists(DATA_PATH) and not os.path.exists(sample_path):
         st.error("Data file not found. Run `python scripts/preprocess_data.py` first.")
         return
 
