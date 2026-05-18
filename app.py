@@ -10,6 +10,8 @@ st.set_page_config(
 # ── Global CSS tweaks (light base from config.toml handles the rest) ──────────
 st.markdown("""
 <style>
+[data-testid="stSidebar"]            { display: none; }
+[data-testid="collapsedControl"]     { display: none; }
 [data-testid="stHeader"] { border-bottom: 1px solid #e2e8f0; }
 .stTabs [data-baseweb="tab-list"] {
     gap: 8px;
