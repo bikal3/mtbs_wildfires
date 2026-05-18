@@ -75,32 +75,96 @@ h1, h2, h3 { color: #f1f5f9; }
 
 LIGHT_CSS = """
 <style>
-[data-testid="stAppViewContainer"] { background-color: #ffffff; }
-[data-testid="stHeader"]            { background-color: #ffffff; }
-section[data-testid="stSidebar"]    { background-color: #f8fafc; }
+/* ── 1. Override Streamlit's injected CSS variables ─────────────────────── */
+:root {
+    --text-color:                  #0f172a !important;
+    --background-color:            #ffffff !important;
+    --secondary-background-color:  #f1f5f9 !important;
+    --primary-color:               #f97316 !important;
+}
+
+/* ── 2. App shell backgrounds ───────────────────────────────────────────── */
+.stApp,
+[data-testid="stApp"],
+[data-testid="stAppViewContainer"],
+[data-testid="stAppViewContainer"] > section,
+[data-testid="stMain"],
+[data-testid="block-container"]          { background-color: #ffffff !important; }
+[data-testid="stHeader"]                 { background-color: #ffffff !important; border-bottom: 1px solid #e2e8f0; }
+section[data-testid="stSidebar"]         { background-color: #f8fafc !important; }
+
+/* ── 3. Global text colour (catches everything config.toml made white) ───── */
+.stApp, .stApp *                         { color: #374151; }
+h1, h2, h3, h4, h5, h6                  { color: #0f172a !important; }
+a                                        { color: #f97316 !important; }
+
+/* ── 4. Streamlit text primitives ───────────────────────────────────────── */
+[data-testid="stMarkdownContainer"],
+[data-testid="stMarkdownContainer"] *    { color: #374151 !important; }
+[data-testid="stText"],
+[data-testid="stText"] *                 { color: #374151 !important; }
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] *     { color: #6b7280 !important; }
+[data-testid="stHeadingWithActionElements"],
+[data-testid="stHeadingWithActionElements"] * { color: #0f172a !important; }
+[data-testid="stSubheader"],
+[data-testid="stSubheader"] *            { color: #0f172a !important; }
+
+/* ── 5. Metrics ─────────────────────────────────────────────────────────── */
+[data-testid="metric-container"]         { background: transparent !important; }
+[data-testid="stMetricLabel"],
+[data-testid="stMetricLabel"] *          { color: #6b7280 !important; }
+[data-testid="stMetricValue"],
+[data-testid="stMetricValue"] *          { color: #0f172a !important; }
+[data-testid="stMetricDelta"],
+[data-testid="stMetricDelta"] *          { color: #6b7280 !important; }
+
+/* ── 6. Tabs ────────────────────────────────────────────────────────────── */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 8px; background-color: #f1f5f9;
-    padding: 8px 16px 0; border-bottom: 1px solid #e2e8f0;
+    gap: 8px;
+    background-color: #f1f5f9 !important;
+    padding: 8px 16px 0;
+    border-bottom: 1px solid #e2e8f0;
 }
-.stTabs [data-baseweb="tab"] {
-    color: #6b7280; background-color: transparent;
-    border-radius: 4px 4px 0 0; padding: 8px 24px;
-    font-weight: 600; font-size: 14px;
-}
-.stTabs [aria-selected="true"] { background-color: #ffffff !important; color: #f97316 !important; }
-h1, h2, h3 { color: #0f172a; }
-p, li, label { color: #374151; }
-[data-testid="stMetricLabel"]  > div { color: #6b7280 !important; }
-[data-testid="stMetricValue"]  > div { color: #0f172a !important; }
-[data-testid="stCaptionContainer"] p { color: #6b7280 !important; }
-[data-testid="stMarkdownContainer"] p { color: #374151 !important; }
-[data-testid="stMarkdownContainer"] li { color: #374151 !important; }
-[data-testid="stVerticalBlock"]     { color: #374151; }
-.stAlert { background-color: #f1f5f9 !important; color: #374151 !important; }
-[data-testid="stHorizontalBlock"] > div { background-color: transparent; }
-[data-baseweb="select"] > div { background-color: #f1f5f9 !important; color: #0f172a !important; }
-[data-baseweb="input"]  > div { background-color: #f1f5f9 !important; color: #0f172a !important; }
-.stSlider [data-baseweb="slider"] { background-color: transparent; }
+.stTabs [data-baseweb="tab"]             { color: #6b7280 !important; background-color: transparent !important; border-radius: 4px 4px 0 0; padding: 8px 24px; font-weight: 600; font-size: 14px; }
+.stTabs [data-baseweb="tab"] *           { color: inherit !important; }
+.stTabs [aria-selected="true"]           { background-color: #ffffff !important; color: #f97316 !important; }
+
+/* ── 7. Form controls ───────────────────────────────────────────────────── */
+[data-baseweb="select"] > div,
+[data-baseweb="select"] [data-baseweb="input"] { background-color: #f1f5f9 !important; color: #0f172a !important; border-color: #e2e8f0 !important; }
+[data-baseweb="select"] span,
+[data-baseweb="select"] div              { color: #0f172a !important; }
+[data-baseweb="popover"],
+[data-baseweb="popover"] *               { background-color: #ffffff !important; color: #0f172a !important; }
+[role="listbox"],
+[role="listbox"] *                       { background-color: #ffffff !important; color: #0f172a !important; }
+[role="option"]                          { color: #0f172a !important; }
+[role="option"]:hover                    { background-color: #f1f5f9 !important; }
+[data-baseweb="input"] > div             { background-color: #f1f5f9 !important; color: #0f172a !important; }
+[data-testid="stSlider"] label,
+[data-testid="stSlider"] *               { color: #374151 !important; }
+[data-testid="stToggle"] span            { color: #374151 !important; }
+
+/* ── 8. Alerts / info boxes ─────────────────────────────────────────────── */
+[data-testid="stAlert"]                  { background-color: #eff6ff !important; border-color: #bfdbfe !important; }
+[data-testid="stAlert"] *                { color: #1d4ed8 !important; }
+[data-testid="stAlert"][data-baseweb="notification"][kind="warning"],
+[data-testid="stAlert"][data-baseweb="notification"][kind="warning"] * { color: #92400e !important; }
+
+/* ── 9. Expander ────────────────────────────────────────────────────────── */
+[data-testid="stExpander"]               { border-color: #e2e8f0 !important; background-color: #f8fafc !important; }
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary *,
+[data-testid="stExpander"] p             { color: #374151 !important; }
+
+/* ── 10. Divider ────────────────────────────────────────────────────────── */
+hr                                       { border-color: #e2e8f0 !important; }
+
+/* ── 11. Buttons ────────────────────────────────────────────────────────── */
+[data-testid="stDownloadButton"] button  { background-color: #f1f5f9 !important; color: #374151 !important; border-color: #e2e8f0 !important; }
+[data-testid="stLinkButton"] a           { background-color: #f1f5f9 !important; color: #374151 !important; border-color: #e2e8f0 !important; }
+button[kind="secondary"]                 { background-color: #f1f5f9 !important; color: #374151 !important; border-color: #e2e8f0 !important; }
 </style>
 """
 
