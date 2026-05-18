@@ -33,6 +33,24 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ── Site header ───────────────────────────────────────────────────────────────
+st.markdown("""
+<div style="padding: 32px 8px 24px; border-bottom: 1px solid #e2e8f0; margin-bottom: 4px;">
+  <div style="color:#ea580c;font-size:11px;font-weight:700;letter-spacing:3px;
+              text-transform:uppercase;margin-bottom:8px;">
+    California · 1984 – 2022
+  </div>
+  <h1 style="color:#0f172a;font-size:36px;font-weight:900;margin:0 0 10px;line-height:1.15;">
+    🔥 California Wildfire Analysis
+  </h1>
+  <p style="color:#4b5563;font-size:15px;max-width:680px;line-height:1.75;margin:0;">
+    An end-to-end data science project combining satellite imagery, climate records,
+    and 38 years of MTBS fire data to understand how California's wildfire crisis
+    has intensified — and what the land looks like after the flames.
+  </p>
+</div>
+""", unsafe_allow_html=True)
+
 tab1, tab2, tab3 = st.tabs(["🔥  Story", "🔬  Research", "🗺  Explorer"])
 
 with tab1:
