@@ -10,4 +10,5 @@
 **/.cache.sqlite/
 **/__pycache__/
 .env
+.superpowers/
 
