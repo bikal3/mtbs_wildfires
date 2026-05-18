@@ -35,7 +35,7 @@ def compute_research_stats(df: pd.DataFrame) -> dict:
     pct_high = round(len(df[df['severity'] == 'High']) / len(df) * 100, 1) if len(df) > 0 else 0.0
     return {
         'total_events': len(df),
-        'total_acres_m': round(total_acres / 1_000_000, 1),
+        'total_acres_m': float(round(total_acres / 1_000_000, 1)),
         'pct_high': pct_high,
         'year_min': int(df['year'].min()) if len(df) > 0 else 0,
         'year_max': int(df['year'].max()) if len(df) > 0 else 0,
