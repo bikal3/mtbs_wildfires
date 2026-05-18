@@ -6,7 +6,6 @@ import streamlit as st
 from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH, is_sample_data
 from utils.theme import get_theme
 
-REPORT_PATH = os.path.join(os.path.dirname(__file__), '..', 'src', 'Report.pdf')
 
 SEVERITY_COLORS = {'Low': '#22c55e', 'Medium': '#f97316', 'High': '#ef4444'}
 
@@ -123,14 +122,7 @@ def render_research():
         "can characterise wildfire burn severity trends across California over 38 years. "
         "Data is sourced from the Monitoring Trends in Burn Severity (MTBS) programme, "
         "Google Earth Engine, AWS S3, and the Open-Meteo API.")
-    col1, col2 = st.columns([1, 5])
-    with col1:
-        if os.path.exists(REPORT_PATH):
-            with open(REPORT_PATH, 'rb') as f:
-                st.download_button("📄 Report PDF", f, file_name="MTBS_Wildfire_Report.pdf",
-                                   mime="application/pdf")
-    with col2:
-        st.link_button("💻 GitHub Repo", "https://github.com/bikal3/mtbs_wildfires")
+    st.link_button("💻 GitHub Repo", "https://github.com/bikal3/mtbs_wildfires")
     st.divider()
 
     # ── 02 Data Sources ───────────────────────────────────────────────────────
