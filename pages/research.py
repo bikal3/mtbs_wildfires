@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH
+from utils.theme import get_theme
 
 REPORT_PATH = os.path.join(os.path.dirname(__file__), '..', 'src', 'Report.pdf')
 
@@ -49,6 +50,7 @@ def render_research():
 
     df = load_data()
     stats = compute_research_stats(df)
+    t = get_theme()
 
     # ── Page header ──────────────────────────────────────────────────────────
     st.markdown(
@@ -109,10 +111,10 @@ def render_research():
     ]:
         with col:
             st.markdown(
-                f"<div style='background:#1e293b;border-radius:6px;padding:12px;text-align:center;'>"
+                f"<div style='background:{t['card_bg']};border-radius:6px;padding:12px;text-align:center;'>"
                 f"<div style='font-size:24px;'>{icon}</div>"
-                f"<div style='color:#e2e8f0;font-weight:700;margin-top:6px;'>{label}</div>"
-                f"<div style='color:#64748b;font-size:12px;'>{sublabel}</div>"
+                f"<div style='color:{t['card_text']};font-weight:700;margin-top:6px;'>{label}</div>"
+                f"<div style='color:{t['card_sub']};font-size:12px;'>{sublabel}</div>"
                 f"</div>",
                 unsafe_allow_html=True,
             )
@@ -132,11 +134,11 @@ def render_research():
             title='Total Acres Burned per Year',
         )
         fig_bar.update_layout(
-            paper_bgcolor='#111', plot_bgcolor='#111',
-            font_color='#9ca3af', coloraxis_showscale=False,
-            title_font_color='#e2e8f0',
+            paper_bgcolor=t['chart_paper'], plot_bgcolor=t['chart_plot'],
+            font_color=t['chart_font'], coloraxis_showscale=False,
+            title_font_color=t['chart_title'],
             margin=dict(l=40, r=20, t=40, b=40), height=300,
-            xaxis=dict(showgrid=False), yaxis=dict(gridcolor='#1e293b'),
+            xaxis=dict(showgrid=False), yaxis=dict(gridcolor=t['chart_grid']),
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
@@ -153,13 +155,13 @@ def render_research():
         ))
         fig_line.add_vline(x=0, line_color='#f97316', line_dash='dot', annotation_text='Fire')
         fig_line.update_layout(
-            paper_bgcolor='#111', plot_bgcolor='#111',
-            font_color='#9ca3af', title='EVI Recovery Timeline (3 years)',
-            title_font_color='#e2e8f0',
+            paper_bgcolor=t['chart_paper'], plot_bgcolor=t['chart_plot'],
+            font_color=t['chart_font'], title='EVI Recovery Timeline (3 years)',
+            title_font_color=t['chart_title'],
             margin=dict(l=40, r=20, t=40, b=40), height=300,
             xaxis=dict(title='Months after fire', showgrid=False),
-            yaxis=dict(title='EVI index', gridcolor='#1e293b', range=[0, 0.7]),
-            legend=dict(bgcolor='#1e293b'),
+            yaxis=dict(title='EVI index', gridcolor=t['chart_grid'], range=[0, 0.7]),
+            legend=dict(bgcolor=t['card_bg']),
         )
         st.plotly_chart(fig_line, use_container_width=True)
     st.divider()
@@ -167,24 +169,21 @@ def render_research():
     # ── 05 Key Findings ───────────────────────────────────────────────────────
     st.subheader("05 — Key Findings")
     findings = [
-        ("🔥", "orange",
-         f"High-severity burn area represents {stats['pct_high']}% of all California "
+        ("🔥", f"High-severity burn area represents {stats['pct_high']}% of all California "
          "wildfire events in the dataset. Severe events (>100,000 acres) have become "
          "increasingly frequent after 2000."),
-        ("🌿", "green",
-         "EVI recovery analysis shows high-severity burned areas reach only ~36% of "
+        ("🌿", "EVI recovery analysis shows high-severity burned areas reach only ~36% of "
          "pre-fire vegetation levels after 3 years, compared to >58% for low-severity areas."),
-        ("🌡", "blue",
-         "Weather data from Open-Meteo confirms fire events with max daily temperatures "
+        ("🌡", "Weather data from Open-Meteo confirms fire events with max daily temperatures "
          "above 35°C and minimum relative humidity below 15% correspond to the highest "
          "severity outcomes in the dataset."),
     ]
-    for icon, color, text in findings:
+    for icon, text in findings:
         st.markdown(
-            f"<div style='background:#111;border-radius:6px;padding:14px 18px;margin-bottom:10px;"
-            f"display:flex;gap:14px;align-items:flex-start;'>"
+            f"<div style='background:{t['finding_bg']};border-radius:6px;padding:14px 18px;"
+            f"margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;'>"
             f"<div style='font-size:20px;'>{icon}</div>"
-            f"<div style='color:#d1d5db;font-size:14px;line-height:1.6;'>{text}</div>"
+            f"<div style='color:{t['finding_text']};font-size:14px;line-height:1.6;'>{text}</div>"
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -195,9 +194,9 @@ def render_research():
     tools = ["Python", "Google Earth Engine", "GeoPandas", "Dask", "Plotly", "Folium", "Open-Meteo", "Streamlit"]
     st.markdown(
         " ".join(
-            f"<span style='background:#1e293b;color:#94a3b8;padding:4px 10px;"
-            f"border-radius:4px;font-size:12px;margin:2px;display:inline-block;'>{t}</span>"
-            for t in tools
+            f"<span style='background:{t['badge_bg']};color:{t['badge_text']};padding:4px 10px;"
+            f"border-radius:4px;font-size:12px;margin:2px;display:inline-block;'>{tool}</span>"
+            for tool in tools
         ),
         unsafe_allow_html=True,
     )

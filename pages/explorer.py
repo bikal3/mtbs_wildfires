@@ -6,6 +6,7 @@ from streamlit_folium import st_folium
 import streamlit as st
 import plotly.graph_objects as go
 from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH
+from utils.theme import get_theme
 
 EVI_DIR = Path(__file__).parent.parent / 'data' / 'evi_exports'
 
@@ -64,15 +65,16 @@ def _evi_recovery_data() -> pd.DataFrame:
 
 def build_folium_map(df: pd.DataFrame, selected_id: str = None) -> folium.Map:
     """Build a Folium map with fire event circle markers."""
+    t = get_theme()
     m = folium.Map(
         location=[37.5, -119.5],
         zoom_start=6,
-        tiles='CartoDB dark_matter',
+        tiles=t['folium_tiles'],
     )
-    legend_html = """
-<div style="position:fixed;top:10px;right:10px;z-index:1000;background:#1e293b;
-     border-radius:6px;padding:10px 14px;color:#e2e8f0;font-size:12px;
-     box-shadow:0 2px 8px rgba(0,0,0,0.5);">
+    legend_html = f"""
+<div style="position:fixed;top:10px;right:10px;z-index:1000;background:{t['legend_bg']};
+     border-radius:6px;padding:10px 14px;color:{t['legend_text']};font-size:12px;
+     box-shadow:0 2px 8px {t['legend_shadow']};">
   <b>Severity</b><br>
   <span style="color:#fbbf24;">●</span> Low<br>
   <span style="color:#f97316;">●</span> Medium<br>
@@ -186,18 +188,19 @@ def render_explorer():
             st.caption(f"Ignition: {row['ig_date']}")
 
             # Mini EVI recovery chart
+            t = get_theme()
             evi_df = _evi_recovery_data()
             fig_evi = go.Figure()
             fig_evi.add_trace(go.Scatter(x=evi_df['months'], y=evi_df['low'], mode='lines', name='Low', line=dict(color='#22c55e', width=1.5)))
             fig_evi.add_trace(go.Scatter(x=evi_df['months'], y=evi_df['high'], mode='lines', name='High', line=dict(color='#ef4444', width=1.5, dash='dash')))
             fig_evi.update_layout(
-                paper_bgcolor='#111', plot_bgcolor='#111',
-                font_color='#9ca3af',
-                title=dict(text='EVI Recovery (3yr) — reference', font=dict(color='#e2e8f0', size=12)),
+                paper_bgcolor=t['chart_paper'], plot_bgcolor=t['chart_plot'],
+                font_color=t['chart_font'],
+                title=dict(text='EVI Recovery (3yr) — reference', font=dict(color=t['chart_title'], size=12)),
                 margin=dict(l=30, r=10, t=30, b=30), height=180,
                 xaxis=dict(title='Months', showgrid=False, tickfont=dict(size=9)),
-                yaxis=dict(title='EVI', gridcolor='#1e293b', range=[0, 0.7], tickfont=dict(size=9)),
-                legend=dict(bgcolor='#1e293b', font=dict(size=9)),
+                yaxis=dict(title='EVI', gridcolor=t['chart_grid'], range=[0, 0.7], tickfont=dict(size=9)),
+                legend=dict(bgcolor=t['card_bg'], font=dict(size=9)),
                 showlegend=True,
             )
             st.plotly_chart(fig_evi, use_container_width=True)

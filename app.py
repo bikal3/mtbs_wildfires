@@ -7,33 +7,22 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-st.markdown("""
-<style>
-[data-testid="stAppViewContainer"] { background-color: #0a0a0a; }
-[data-testid="stHeader"] { background-color: #0a0a0a; }
-section[data-testid="stSidebar"] { background-color: #0f0f0f; }
-.stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
-    background-color: #0f0f0f;
-    padding: 8px 16px 0;
-    border-bottom: 1px solid #1a1a1a;
-}
-.stTabs [data-baseweb="tab"] {
-    color: #6b7280;
-    background-color: transparent;
-    border-radius: 4px 4px 0 0;
-    padding: 8px 24px;
-    font-weight: 600;
-    font-size: 14px;
-}
-.stTabs [aria-selected="true"] {
-    background-color: #1a1a1a !important;
-    color: #f97316 !important;
-}
-h1, h2, h3 { color: #f1f5f9; }
-</style>
-""", unsafe_allow_html=True)
+# Initialise theme state
+if 'dark_mode' not in st.session_state:
+    st.session_state.dark_mode = True
 
+from utils.theme import inject_css
+inject_css()
+
+# ── Theme toggle button (top-right) ───────────────────────────────────────────
+_, toggle_col = st.columns([0.96, 0.04])
+with toggle_col:
+    icon = "☀️" if st.session_state.dark_mode else "🌙"
+    if st.button(icon, key="theme_toggle", help="Switch light / dark mode"):
+        st.session_state.dark_mode = not st.session_state.dark_mode
+        st.rerun()
+
+# ── Tabs ──────────────────────────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["🔥  Story", "🔬  Research", "🗺  Explorer"])
 
 with tab1:
