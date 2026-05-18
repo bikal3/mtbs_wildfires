@@ -12,7 +12,15 @@ import botocore.config
 import boto3
 import pandas as pd
 import geopandas as gpd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+SUMMARY_COLUMNS = [
+    'event_id', 'event_name', 'ig_date', 'year',
+    'latitude', 'longitude', 'acres', 'severity',
+    'max_temp_c', 'min_humidity_pct',
+]
 
 # src/utils path — added to sys.path so lazy imports inside functions work
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
@@ -58,24 +66,28 @@ def classify_severity(acres: float) -> str:
 def get_event_weather(lat: float, lon: float, ig_date_ms: int) -> dict:
     """
     Fetch peak temperature (C) and minimum relative humidity (%)
-    for a 17-day window centred on the ignition date.
+    for a window from 3 days before to 14 days after the ignition date (17 days total).
     Returns dict with keys max_temp_c and min_humidity_pct.
     """
-    ig_date = datetime.utcfromtimestamp(ig_date_ms / 1000)
-    start = (ig_date - timedelta(days=3)).strftime('%Y-%m-%d')
-    end = (ig_date + timedelta(days=14)).strftime('%Y-%m-%d')
-    from utils.openmeteo_utils import fetch_weather_data  # noqa: PLC0415
-    df = fetch_weather_data(
-        latitude=lat,
-        longitude=lon,
-        start_date=start,
-        end_date=end,
-        daily_variables=['temperature_2m_max', 'relative_humidity_2m_min'],
-    )
-    return {
-        'max_temp_c': round(float(df['temperature_2m_max'].max()), 1),
-        'min_humidity_pct': round(float(df['relative_humidity_2m_min'].min()), 1),
-    }
+    try:
+        ig_date = datetime.fromtimestamp(ig_date_ms / 1000, tz=timezone.utc).replace(tzinfo=None)
+        start = (ig_date - timedelta(days=3)).strftime('%Y-%m-%d')
+        end = (ig_date + timedelta(days=14)).strftime('%Y-%m-%d')
+        from utils.openmeteo_utils import fetch_weather_data  # noqa: PLC0415
+        df = fetch_weather_data(
+            latitude=lat,
+            longitude=lon,
+            start_date=start,
+            end_date=end,
+            daily_variables=['temperature_2m_max', 'relative_humidity_2m_min'],
+        )
+        return {
+            'max_temp_c': round(float(df['temperature_2m_max'].max()), 1),
+            'min_humidity_pct': round(float(df['relative_humidity_2m_min'].min()), 1),
+        }
+    except Exception as exc:
+        print(f'WARNING: weather fetch failed for ({lat}, {lon}, {ig_date_ms}): {exc}')
+        return {'max_temp_c': None, 'min_humidity_pct': None}
 
 
 def build_summary(ca_fires: gpd.GeoDataFrame) -> pd.DataFrame:
@@ -87,13 +99,15 @@ def build_summary(ca_fires: gpd.GeoDataFrame) -> pd.DataFrame:
     for _, row in ca_fires.iterrows():
         centroid = row.geometry.centroid
         ig_ms = int(row['Ig_Date'])
-        ig_date_str = datetime.utcfromtimestamp(ig_ms / 1000).strftime('%Y-%m-%d')
+        ig_dt = datetime.fromtimestamp(ig_ms / 1000, tz=timezone.utc).replace(tzinfo=None)
+        ig_date_str = ig_dt.strftime('%Y-%m-%d')
+        year = ig_dt.year
         weather = get_event_weather(centroid.y, centroid.x, ig_ms)
         records.append({
             'event_id': row['Event_ID'],
             'event_name': row['Incid_Name'],
             'ig_date': ig_date_str,
-            'year': datetime.utcfromtimestamp(ig_ms / 1000).year,
+            'year': year,
             'latitude': round(centroid.y, 6),
             'longitude': round(centroid.x, 6),
             'acres': round(float(row['BurnBndAc']), 1),
@@ -101,13 +115,13 @@ def build_summary(ca_fires: gpd.GeoDataFrame) -> pd.DataFrame:
             'max_temp_c': weather['max_temp_c'],
             'min_humidity_pct': weather['min_humidity_pct'],
         })
-    return pd.DataFrame(records)
+    return pd.DataFrame(records, columns=SUMMARY_COLUMNS)
 
 
 if __name__ == '__main__':
-    local_path = 'data/raw'
+    local_path = os.path.join(PROJECT_ROOT, 'data', 'raw')
     os.makedirs(local_path, exist_ok=True)
-    os.makedirs('data', exist_ok=True)
+    os.makedirs(os.path.join(PROJECT_ROOT, 'data'), exist_ok=True)
 
     print('Loading MTBS California fires from AWS S3...')
     ca_fires = load_mtbs_california(local_path)
@@ -116,6 +130,6 @@ if __name__ == '__main__':
     print('Fetching weather data and building summary...')
     summary = build_summary(ca_fires)
 
-    output_path = 'data/mtbs_ca_summary.csv'
+    output_path = os.path.join(PROJECT_ROOT, 'data', 'mtbs_ca_summary.csv')
     summary.to_csv(output_path, index=False)
     print(f'Saved {len(summary)} events to {output_path}')

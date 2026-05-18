@@ -2,7 +2,7 @@ import pandas as pd
 import geopandas as gpd
 import pytest
 from shapely.geometry import Point, Polygon
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -67,7 +67,11 @@ def test_build_summary_values():
     row = df.iloc[0]
     assert row['event_id'] == 'CA3983912034520210702'
     assert row['event_name'] == 'TEST FIRE'
+    assert row['ig_date'] == '2021-07-02'
     assert row['year'] == 2021
+    assert abs(row['latitude'] - 38.5) < 0.01
+    assert abs(row['longitude'] - (-119.5)) < 0.01
+    assert row['acres'] == 963000.0
     assert row['severity'] == 'High'
     assert row['max_temp_c'] == 38.5
     assert row['min_humidity_pct'] == 11.0
