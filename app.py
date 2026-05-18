@@ -13,7 +13,7 @@ st.markdown("""
 [data-testid="stSidebar"]            { display: none; }
 [data-testid="collapsedControl"]     { display: none; }
 [data-testid="stHeader"]             { border-bottom: 1px solid #e2e8f0; }
-[data-testid="block-container"]      { padding-top: 1rem !important; }
+[data-testid="block-container"]      { padding-top: 0.25rem !important; }
 .stTabs [data-baseweb="tab-list"] {
     gap: 8px;
     background-color: #f8fafc;
