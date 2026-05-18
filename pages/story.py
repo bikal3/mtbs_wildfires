@@ -101,4 +101,4 @@ def render_story():
 
     # Render narrative sections with embedded trend chart
     sections_html = inject_stats(sections_html, trend_chart=trend_chart_html)
-    components.html(sections_html, height=1400, scrolling=True)
+    components.html(sections_html, height=1700, scrolling=True)

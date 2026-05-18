@@ -37,35 +37,99 @@
     Vegetation Recovery
   </div>
   <h2 style="color:#0f172a;font-size:26px;font-weight:800;margin:0 0 14px;">
-    Satellite imagery tracks what burns — and what recovers
+    After a severe fire, forests take decades to recover
   </h2>
-  <p style="color:#4b5563;font-size:15px;line-height:1.8;margin-bottom:28px;">
-    Using the Enhanced Vegetation Index (EVI) from Landsat 8 and Sentinel-2,
-    we tracked vegetation health before and after each fire event.
-    High-severity burns show slower, often incomplete recovery — the
-    landscape is fundamentally altered for years.
+  <p style="color:#4b5563;font-size:15px;line-height:1.8;margin-bottom:32px;">
+    EVI (Enhanced Vegetation Index) is a satellite-derived score from 0 to 1 that
+    measures how much live, green vegetation covers the land.
+    Dense forest scores ~0.55. Bare scorched earth drops to ~0.10.
+    We tracked this score for every fire event from ignition through 3 years of recovery.
   </p>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-    <!-- Pre-fire -->
-    <div style="background:#ffffff;border:1px solid #d1fae5;border-radius:8px;padding:18px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
-      <div style="background:linear-gradient(180deg,#bbf7d0,#4ade80,#16a34a,#14532d);height:64px;border-radius:5px;margin-bottom:12px;"></div>
-      <div style="color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Pre-fire EVI</div>
-      <div style="color:#15803d;font-size:14px;font-weight:700;">Healthy vegetation</div>
-      <div style="color:#9ca3af;font-size:12px;margin-top:4px;">EVI ≈ 0.55</div>
+
+  <!-- Timeline flow -->
+  <div style="display:flex;align-items:stretch;gap:0;margin-bottom:32px;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;">
+
+    <!-- Before -->
+    <div style="flex:1;background:#f0fdf4;padding:22px 18px;text-align:center;border-right:1px solid #e2e8f0;">
+      <div style="font-size:32px;margin-bottom:8px;">🌲</div>
+      <div style="color:#15803d;font-size:22px;font-weight:900;margin-bottom:2px;">0.55</div>
+      <div style="color:#166534;font-size:12px;font-weight:700;margin-bottom:6px;">Before fire</div>
+      <div style="color:#4b5563;font-size:12px;line-height:1.5;">Dense, healthy<br>forest canopy</div>
     </div>
-    <!-- Post-fire -->
-    <div style="background:#ffffff;border:1px solid #fecaca;border-radius:8px;padding:18px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
-      <div style="background:linear-gradient(180deg,#fca5a5,#ef4444,#b91c1c,#7f1d1d);height:64px;border-radius:5px;margin-bottom:12px;"></div>
-      <div style="color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Post-fire EVI</div>
-      <div style="color:#dc2626;font-size:14px;font-weight:700;">Scorched landscape</div>
-      <div style="color:#9ca3af;font-size:12px;margin-top:4px;">EVI ≈ 0.10</div>
+
+    <!-- Arrow -->
+    <div style="display:flex;align-items:center;justify-content:center;background:#fff7ed;padding:0 10px;min-width:48px;">
+      <div style="text-align:center;">
+        <div style="font-size:18px;">🔥</div>
+        <div style="color:#ea580c;font-size:9px;font-weight:700;text-transform:uppercase;margin-top:4px;">Fire</div>
+      </div>
     </div>
-    <!-- 1-year recovery -->
-    <div style="background:#ffffff;border:1px solid #fde68a;border-radius:8px;padding:18px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
-      <div style="background:linear-gradient(180deg,#fde68a,#fbbf24,#d97706,#92400e);height:64px;border-radius:5px;margin-bottom:12px;"></div>
-      <div style="color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">1-year recovery</div>
-      <div style="color:#b45309;font-size:14px;font-weight:700;">Partial regrowth</div>
-      <div style="color:#9ca3af;font-size:12px;margin-top:4px;">EVI ≈ 0.30</div>
+
+    <!-- Immediately after -->
+    <div style="flex:1;background:#fef2f2;padding:22px 18px;text-align:center;border-right:1px solid #e2e8f0;">
+      <div style="font-size:32px;margin-bottom:8px;">🏜️</div>
+      <div style="color:#dc2626;font-size:22px;font-weight:900;margin-bottom:2px;">0.10</div>
+      <div style="color:#b91c1c;font-size:12px;font-weight:700;margin-bottom:6px;">Immediately after</div>
+      <div style="color:#4b5563;font-size:12px;line-height:1.5;">Scorched ground,<br>ash and char</div>
+    </div>
+
+    <!-- Arrow -->
+    <div style="display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:0 10px;min-width:48px;">
+      <div style="color:#9ca3af;font-size:20px;">→</div>
+    </div>
+
+    <!-- 3 years later: high severity -->
+    <div style="flex:1;background:#fff9f0;padding:22px 18px;text-align:center;border-right:1px solid #e2e8f0;">
+      <div style="font-size:32px;margin-bottom:8px;">🌿</div>
+      <div style="color:#d97706;font-size:22px;font-weight:900;margin-bottom:2px;">0.35</div>
+      <div style="color:#92400e;font-size:12px;font-weight:700;margin-bottom:6px;">3 yrs · High severity</div>
+      <div style="color:#4b5563;font-size:12px;line-height:1.5;">Only 64% recovered —<br>sparse shrubs remain</div>
+    </div>
+
+    <!-- Arrow -->
+    <div style="display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:0 10px;min-width:48px;">
+      <div style="color:#9ca3af;font-size:20px;">vs</div>
+    </div>
+
+    <!-- 3 years later: low severity -->
+    <div style="flex:1;background:#f0fdf4;padding:22px 18px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">🌳</div>
+      <div style="color:#16a34a;font-size:22px;font-weight:900;margin-bottom:2px;">0.58</div>
+      <div style="color:#166534;font-size:12px;font-weight:700;margin-bottom:6px;">3 yrs · Low severity</div>
+      <div style="color:#4b5563;font-size:12px;line-height:1.5;">Nearly full recovery —<br>vegetation re-established</div>
+    </div>
+  </div>
+
+  <!-- Recovery progress bars -->
+  <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:20px 24px;">
+    <div style="color:#374151;font-size:13px;font-weight:700;margin-bottom:14px;">
+      % of pre-fire vegetation recovered after 3 years
+    </div>
+
+    <!-- High severity bar -->
+    <div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="color:#374151;font-size:13px;font-weight:600;">🔴 High severity fires</span>
+        <span style="color:#dc2626;font-size:13px;font-weight:700;">64% recovered</span>
+      </div>
+      <div style="background:#fee2e2;border-radius:4px;height:10px;overflow:hidden;">
+        <div style="background:#ef4444;width:64%;height:100%;border-radius:4px;"></div>
+      </div>
+    </div>
+
+    <!-- Low severity bar -->
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="color:#374151;font-size:13px;font-weight:600;">🟢 Low severity fires</span>
+        <span style="color:#16a34a;font-size:13px;font-weight:700;">105% recovered</span>
+      </div>
+      <div style="background:#dcfce7;border-radius:4px;height:10px;overflow:hidden;">
+        <div style="background:#22c55e;width:100%;height:100%;border-radius:4px;"></div>
+      </div>
+    </div>
+
+    <div style="color:#9ca3af;font-size:11px;margin-top:12px;">
+      Recovery measured as EVI relative to pre-fire baseline. Low-severity areas can exceed baseline as shrubs regenerate faster than original trees.
     </div>
   </div>
 </div>
