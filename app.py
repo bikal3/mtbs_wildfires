@@ -12,7 +12,8 @@ st.markdown("""
 <style>
 [data-testid="stSidebar"]            { display: none; }
 [data-testid="collapsedControl"]     { display: none; }
-[data-testid="stHeader"] { border-bottom: 1px solid #e2e8f0; }
+[data-testid="stHeader"]             { border-bottom: 1px solid #e2e8f0; }
+[data-testid="block-container"]      { padding-top: 1rem !important; }
 .stTabs [data-baseweb="tab-list"] {
     gap: 8px;
     background-color: #f8fafc;
@@ -37,7 +38,7 @@ st.markdown("""
 
 # ── Site header ───────────────────────────────────────────────────────────────
 st.markdown("""
-<div style="padding: 32px 8px 24px; border-bottom: 1px solid #e2e8f0; margin-bottom: 4px;">
+<div style="padding: 12px 8px 16px; border-bottom: 1px solid #e2e8f0; margin-bottom: 4px;">
   <div style="color:#ea580c;font-size:11px;font-weight:700;letter-spacing:3px;
               text-transform:uppercase;margin-bottom:8px;">
     California · 1984 – 2022
