@@ -44,13 +44,14 @@ def compute_map_stats(df: pd.DataFrame) -> dict:
     """Compute aggregate stats shown in the summary bar."""
     total_acres = df['acres'].sum()
     pct_high = len(df[df['severity'] == 'High']) / len(df) * 100 if len(df) > 0 else 0
-    year_min = int(df['year'].min()) if len(df) > 0 else '—'
-    year_max = int(df['year'].max()) if len(df) > 0 else '—'
+    year_min = int(df['year'].min()) if len(df) > 0 else None
+    year_max = int(df['year'].max()) if len(df) > 0 else None
+    year_range_fmt = f"{year_min}\u2013{year_max}" if year_min is not None else '—'
     return {
         'event_count': len(df),
         'total_acres_fmt': format_acres(total_acres),
         'pct_high_fmt': f"{pct_high:.0f}%",
-        'year_range': f"{year_min}\u2013{year_max}",
+        'year_range': year_range_fmt,
     }
 
 
@@ -197,7 +198,7 @@ def render_explorer():
             fig_evi.update_layout(
                 paper_bgcolor='#111', plot_bgcolor='#111',
                 font_color='#9ca3af',
-                title=dict(text='EVI Recovery (3yr)', font=dict(color='#e2e8f0', size=12)),
+                title=dict(text='EVI Recovery (3yr) — reference', font=dict(color='#e2e8f0', size=12)),
                 margin=dict(l=30, r=10, t=30, b=30), height=180,
                 xaxis=dict(title='Months', showgrid=False, tickfont=dict(size=9)),
                 yaxis=dict(title='EVI', gridcolor='#1e293b', range=[0, 0.7], tickfont=dict(size=9)),
@@ -209,7 +210,7 @@ def render_explorer():
             evi_img = EVI_DIR / f"{clicked_id}.png"
             if evi_img.exists():
                 with st.expander("View full EVI map"):
-                    st.image(str(evi_img), use_column_width=True)
+                    st.image(str(evi_img), use_container_width=True)
             else:
                 st.info("No EVI export available for this event.")
         else:

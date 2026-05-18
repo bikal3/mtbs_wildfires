@@ -73,3 +73,11 @@ def test_compute_map_stats_values():
     stats = compute_map_stats(df)
     assert stats['event_count'] == 4
     assert stats['pct_high_fmt'] == '50%'
+    assert stats['year_range'] == f"1990\u20132022"
+
+
+def test_compute_map_stats_empty_df():
+    empty = pd.DataFrame(columns=['year', 'acres', 'severity'])
+    stats = compute_map_stats(empty)
+    assert stats['event_count'] == 0
+    assert stats['year_range'] == '—'
