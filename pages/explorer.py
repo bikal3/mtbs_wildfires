@@ -5,7 +5,7 @@ import folium
 from streamlit_folium import st_folium
 import streamlit as st
 import plotly.graph_objects as go
-from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH
+from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH, is_sample_data
 from utils.theme import get_theme
 
 EVI_DIR = Path(__file__).parent.parent / 'data' / 'evi_exports'
@@ -113,6 +113,15 @@ def render_explorer():
 
     df = load_data()
 
+    # ── Sample data notice ────────────────────────────────────────────────────
+    if is_sample_data():
+        st.info(
+            f"**Sample dataset** — showing {len(df)} representative events for preview. "
+            "The full California MTBS dataset (1984–2022) contains **1,000+ fire events** "
+            "spanning 38 years. Run `python scripts/preprocess_data.py` to load the complete data.",
+            icon="ℹ️",
+        )
+
     # ── Page header ───────────────────────────────────────────────────────────
     st.markdown(
         "<div style='color:#22c55e;font-size:11px;letter-spacing:3px;text-transform:uppercase;'>"
@@ -154,22 +163,36 @@ def render_explorer():
         st.metric("Events", f"{map_stats['event_count']:,}")
 
     # ── Map + Detail layout ───────────────────────────────────────────────────
-    map_data = None
-    map_col, detail_col = st.columns([3, 1])
+    # Use a filter-derived key so the map widget resets (and clears stale clicks)
+    # whenever the user changes any filter, but stays stable between reruns with
+    # the same filters — preserving the click data returned by st_folium.
+    map_key = f"fire_map_{year_range[0]}_{year_range[1]}_{selected_severity}_{min_acres}"
 
-    # Extract clicked_id from previous render (from session state or prior map_data)
-    # Note: map_data is None on first render, so clicked_id will be None too
+    if st.session_state.get('_last_map_key') != map_key:
+        st.session_state.pop('explorer_clicked_id', None)
+        st.session_state['_last_map_key'] = map_key
+
     clicked_id = st.session_state.get('explorer_clicked_id')
+
+    map_col, detail_col = st.columns([3, 1])
 
     with map_col:
         if filtered.empty:
             st.warning("No events match the current filters.")
         else:
             folium_map = build_folium_map(filtered, selected_id=clicked_id)
-            map_data = st_folium(folium_map, width='100%', height=500, returned_objects=['last_object_clicked_popup'])
+            map_data = st_folium(
+                folium_map,
+                width='100%',
+                height=500,
+                returned_objects=['last_object_clicked_popup'],
+                key=map_key,
+            )
             if map_data and map_data.get('last_object_clicked_popup'):
-                st.session_state['explorer_clicked_id'] = map_data['last_object_clicked_popup']
-                clicked_id = st.session_state['explorer_clicked_id']
+                raw = str(map_data['last_object_clicked_popup']).strip()
+                if raw in filtered['event_id'].values:
+                    st.session_state['explorer_clicked_id'] = raw
+                    clicked_id = raw
 
     with detail_col:
         st.markdown("**Selected Event**")

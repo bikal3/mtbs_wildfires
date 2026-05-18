@@ -14,12 +14,12 @@ if 'dark_mode' not in st.session_state:
 from utils.theme import inject_css
 inject_css()
 
-# ── Theme toggle button (top-right) ───────────────────────────────────────────
-_, toggle_col = st.columns([0.96, 0.04])
+# ── Theme toggle (top-right) ──────────────────────────────────────────────────
+_, toggle_col = st.columns([0.88, 0.12])
 with toggle_col:
-    icon = "☀️" if st.session_state.dark_mode else "🌙"
-    if st.button(icon, key="theme_toggle", help="Switch light / dark mode"):
-        st.session_state.dark_mode = not st.session_state.dark_mode
+    new_dark = st.toggle("Dark mode", value=st.session_state.dark_mode, key="theme_toggle")
+    if new_dark != st.session_state.dark_mode:
+        st.session_state.dark_mode = new_dark
         st.rerun()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────

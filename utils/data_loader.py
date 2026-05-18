@@ -14,3 +14,8 @@ def load_data() -> pd.DataFrame:
     if os.path.exists(SAMPLE_DATA_PATH):
         return pd.read_csv(SAMPLE_DATA_PATH)
     return pd.DataFrame()
+
+
+def is_sample_data() -> bool:
+    """True when running on the committed sample CSV rather than the full dataset."""
+    return not os.path.exists(DATA_PATH) and os.path.exists(SAMPLE_DATA_PATH)

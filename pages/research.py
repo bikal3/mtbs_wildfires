@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH
+from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH, is_sample_data
 from utils.theme import get_theme
 
 REPORT_PATH = os.path.join(os.path.dirname(__file__), '..', 'src', 'Report.pdf')
@@ -51,6 +51,15 @@ def render_research():
     df = load_data()
     stats = compute_research_stats(df)
     t = get_theme()
+
+    # ── Sample data notice ────────────────────────────────────────────────────
+    if is_sample_data():
+        st.info(
+            f"**Sample dataset** — charts show {len(df)} representative events. "
+            "The full dataset contains **1,000+ California wildfire events** (1984–2022). "
+            "Run `python scripts/preprocess_data.py` to load the complete data.",
+            icon="ℹ️",
+        )
 
     # ── Page header ──────────────────────────────────────────────────────────
     st.markdown(
