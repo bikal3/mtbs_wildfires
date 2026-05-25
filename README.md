@@ -73,6 +73,12 @@ python scripts/preprocess_data.py
 - **Pandas** — data processing
 - **MTBS** — Monitoring Trends in Burn Severity dataset (USGS)
 
+## Live Demo
+
+[View the app on Streamlit Cloud](https://your-app-url.streamlit.app)
+
+> The app is hosted on Streamlit Cloud's free tier. If it shows **"This app has gone to sleep due to inactivity"**, click **"Yes, get it back up!"** and it will be ready in about 30 seconds.
+
 ## Deployment
 
 To deploy on Streamlit Cloud, connect this repository and set the main file to `app.py`. No additional configuration is needed — the app uses the bundled sample data when the full dataset is not available.
