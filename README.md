@@ -2,6 +2,12 @@
 
 An end-to-end data science project combining satellite imagery, climate records, and 38 years of MTBS fire data to understand how California's wildfire crisis has intensified — and what the land looks like after the flames.
 
+## Live Demo
+
+[View the app on Streamlit Cloud](https://your-app-url.streamlit.app)
+
+> The app is hosted on Streamlit Cloud's free tier. If it shows **"This app has gone to sleep due to inactivity"**, click **"Yes, get it back up!"** and it will be ready in about 30 seconds.
+
 ## Overview
 
 This project has two parts:
@@ -72,12 +78,6 @@ python scripts/preprocess_data.py
 - **Folium / st-folium** — interactive map
 - **Pandas** — data processing
 - **MTBS** — Monitoring Trends in Burn Severity dataset (USGS)
-
-## Live Demo
-
-[View the app on Streamlit Cloud](https://your-app-url.streamlit.app)
-
-> The app is hosted on Streamlit Cloud's free tier. If it shows **"This app has gone to sleep due to inactivity"**, click **"Yes, get it back up!"** and it will be ready in about 30 seconds.
 
 ## Deployment
 
