@@ -46,10 +46,14 @@ st.markdown("""
   <h1 style="color:#0f172a;font-size:36px;font-weight:900;margin:0 0 10px;line-height:1.15;">
     🔥 California Wildfire Analysis
   </h1>
-  <p style="color:#4b5563;font-size:15px;max-width:680px;line-height:1.75;margin:0;">
+  <p style="color:#4b5563;font-size:15px;max-width:680px;line-height:1.75;margin:0 0 10px;">
     An end-to-end data science project combining satellite imagery, climate records,
     and 38 years of MTBS fire data to understand how California's wildfire crisis
     has intensified — and what the land looks like after the flames.
+  </p>
+  <p style="color:#9ca3af;font-size:13px;margin:0;">
+    By <a href="https://bikal3.com.np/" target="_blank"
+         style="color:#ea580c;text-decoration:none;font-weight:600;">Bikal Shrestha</a>
   </p>
 </div>
 """, unsafe_allow_html=True)
