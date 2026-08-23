@@ -6,7 +6,8 @@
 **/.ipython/
 **/.jupyter/
 **/.local/
-**/data/
+data/raw/
+data/evi_exports/
 **/.cache.sqlite/
 **/__pycache__/
 .env
