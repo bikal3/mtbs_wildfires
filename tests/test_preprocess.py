@@ -122,3 +122,18 @@ def test_ca_filter_keeps_only_california_wildfires():
     )
     result = filter_california_wildfires(gdf)
     assert list(result['Event_ID']) == ['CA111']
+
+
+def test_build_summary_aborts_when_failure_rate_is_systemic():
+    fires = _make_ca_fires()
+    with patch('scripts.preprocess_data.get_event_weather', side_effect=RuntimeError('api down')):
+        with pytest.raises(RuntimeError, match='exceeds'):
+            build_summary(fires)
+
+
+def test_build_summary_tolerates_isolated_failures():
+    fires = _make_ca_fires()
+    with patch('scripts.preprocess_data.get_event_weather', side_effect=RuntimeError('blip')):
+        df = build_summary(fires, max_failure_pct=100.0)
+    assert df.iloc[0]['max_temp_c'] is None
+    assert df.iloc[0]['event_id'] == 'CA3983912034520210702'

@@ -4,6 +4,7 @@ import plotly.express as px
 import streamlit as st
 import streamlit.components.v1 as components
 from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH
+from analysis.stats import compute_story_stats
 
 
 HERO_PATH = os.path.join(os.path.dirname(__file__), '..', 'components', 'story_hero.html')
@@ -24,27 +25,6 @@ def inject_stats(template: str, **kwargs) -> str:
     for key, value in kwargs.items():
         template = template.replace(f'{{{{{key}}}}}', str(value))
     return template
-
-
-def compute_story_stats(df: pd.DataFrame) -> dict:
-    """Compute display statistics from the summary DataFrame."""
-    total_acres = df['acres'].sum()
-    if total_acres >= 1_000_000:
-        total_acres_fmt = f"{total_acres / 1_000_000:.1f}M"
-    else:
-        total_acres_fmt = f"{total_acres / 1_000:.0f}K"
-
-    event_count_fmt = f"{len(df):,}"
-    pct_high = (len(df[df['severity'] == 'High']) / len(df) * 100) if len(df) > 0 else 0.0
-    pct_high_severity_fmt = f"{pct_high:.0f}%"
-    year_range = f"{df['year'].min()}\u2013{df['year'].max()}"
-
-    return {
-        'total_acres_fmt': total_acres_fmt,
-        'event_count_fmt': event_count_fmt,
-        'pct_high_severity_fmt': pct_high_severity_fmt,
-        'year_range': year_range,
-    }
 
 
 def build_trend_chart_html(df: pd.DataFrame) -> str:

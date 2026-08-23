@@ -1,7 +1,8 @@
 import os
 import pandas as pd
 import pytest
-from pages.story import load_template, inject_stats, compute_story_stats
+from pages.story import load_template, inject_stats
+from analysis.stats import compute_story_stats
 
 
 def _sample_df():
