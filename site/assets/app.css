@@ -159,3 +159,46 @@ body {
   .site-title { font-size: 26px; }
   .nav { overflow-x: auto; }
 }
+
+/* ── Story hero ───────────────────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffffff 55%, #fef2f2 100%);
+  padding: 56px 32px 44px;
+  text-align: center;
+  border-bottom: 1px solid #fed7aa;
+}
+.hero h1 { color: var(--ink); font-size: 48px; font-weight: 900; line-height: 1.1; margin: 0 0 14px; }
+.hero .lede { color: var(--muted); font-size: 16px; max-width: 540px; margin: 0 auto 36px; line-height: 1.75; }
+
+/* Was an inline min-width:580px grid, which overflowed narrow screens. */
+.hero-stats {
+  display: inline-grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--bg);
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(249, 115, 22, 0.08);
+  min-width: 580px;
+  max-width: 100%;
+}
+.hero-stats > div { padding: 20px 28px; border-right: 1px solid #fee2e2; }
+.hero-stats > div:last-child { border-right: none; }
+.hero-stats .n { font-size: 30px; font-weight: 900; line-height: 1; }
+.hero-stats .k {
+  color: var(--faint); font-size: 11px; margin-top: 6px; line-height: 1.5;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+@media (max-width: 640px) {
+  .hero { padding: 36px 20px 28px; }
+  .hero h1 { font-size: 32px; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); min-width: 0; width: 100%; }
+  .hero-stats > div:nth-child(2n) { border-right: none; }
+  .story-section { padding: 36px 20px !important; }
+}
+
+.story-section { max-width: 860px; margin: 0 auto; padding: 52px 32px; border-bottom: 1px solid var(--line); }
+.story-section h2 { color: var(--ink); font-size: 26px; font-weight: 800; margin: 0 0 14px; }
+.story-section p { color: var(--body); font-size: 15px; line-height: 1.8; }
+.disclaimer { color: var(--faint); font-size: 12px; font-style: italic; }
