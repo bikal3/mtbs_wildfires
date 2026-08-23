@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorer — California Wildfire Analysis</title>
+<meta name="description" content="Interactive map of California MTBS wildfire events, 1984–2022. Filter by year, severity, and acreage.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128293;</text></svg>">
+<link rel="stylesheet" href="/assets/app.css">
+<link rel="stylesheet" href="/assets/leaflet.css">
+<script src="/assets/plotly-basic.min.js"></script>
+<script src="/assets/leaflet.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="eyebrow">California · <span data-stat="story.year_range">1984–2022</span></div>
+    <h1 class="site-title">🔥 California Wildfire Analysis</h1>
+    <p class="site-intro">
+      An end-to-end data science project combining satellite imagery, climate records,
+      and 38 years of MTBS fire data to understand how California's wildfire crisis
+      has intensified — and what the land looks like after the flames.
+    </p>
+    <p class="byline">By <a href="https://bikal3.com.np/" target="_blank" rel="noopener">Bikal Shrestha</a></p>
+    <nav class="nav">
+      <a href="/">🔥 Story</a>
+      <a href="/research">🔬 Research</a>
+      <a href="/explorer" aria-current="page">🗺 Explorer</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <div class="section" style="border-bottom:none;padding-bottom:0;">
+    <div class="eyebrow" style="color:#16a34a;">Interactive Explorer</div>
+    <h2 style="font-size:28px;">California Fire Events</h2>
+    <p class="caption">Filter, explore, and inspect individual wildfire events from the MTBS dataset.</p>
+  </div>
+
+  <div class="filters">
+    <div>
+      <label for="year-from">Year range: <span id="year-label">1984 – 2022</span></label>
+      <input type="range" id="year-from" min="1984" max="2022" value="1984" step="1">
+      <input type="range" id="year-to"   min="1984" max="2022" value="2022" step="1">
+    </div>
+    <div>
+      <label for="severity">Severity</label>
+      <select id="severity">
+        <option value="All" selected>All</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+    </div>
+    <div>
+      <label for="min-acres">Min acres</label>
+      <select id="min-acres">
+        <option value="0" selected>Any size</option>
+        <option value="10000">10K+ acres</option>
+        <option value="100000">100K+ acres</option>
+      </select>
+    </div>
+    <div class="metric">
+      <div class="label">Events</div>
+      <div class="value" id="filter-count">—</div>
+    </div>
+  </div>
+
+  <div class="explorer-layout">
+    <div>
+      <div id="map"></div>
+      <p id="map-empty" class="note" style="display:none;">No events match the current filters.</p>
+    </div>
+    <aside class="detail">
+      <strong>Selected event</strong>
+      <div id="detail-body"><p class="empty">Click a fire event on the map to see its details.</p></div>
+    </aside>
+  </div>
+
+  <div class="section" style="margin-top:24px;">
+    <div class="grid grid-4">
+      <div class="metric"><div class="label">Events shown</div><div class="value" id="stat-count">—</div></div>
+      <div class="metric"><div class="label">Total acres</div><div class="value" id="stat-acres">—</div></div>
+      <div class="metric"><div class="label">% High severity</div><div class="value" id="stat-high">—</div></div>
+      <div class="metric"><div class="label">Date range</div><div class="value" id="stat-years">—</div></div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    Data: <a href="https://www.mtbs.gov/" target="_blank" rel="noopener">MTBS</a> ·
+    <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> ·
+    Google Earth Engine &nbsp;·&nbsp;
+    <a href="https://github.com/bikal3/mtbs_wildfires" target="_blank" rel="noopener">Source on GitHub</a>
+  </div>
+</footer>
+
+<script src="/assets/charts.js"></script>
+<script src="/assets/explorer.js"></script>
+</body>
+</html>

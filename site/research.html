@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research — California Wildfire Analysis</title>
+<meta name="description" content="Statistical analysis of California wildfire burn severity, fire weather, and seasonality across 1984–2022 MTBS data.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128293;</text></svg>">
+<link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/plotly-basic.min.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="eyebrow">California · <span data-stat="story.year_range">1984–2022</span></div>
+    <h1 class="site-title">🔥 California Wildfire Analysis</h1>
+    <p class="site-intro">
+      An end-to-end data science project combining satellite imagery, climate records,
+      and 38 years of MTBS fire data to understand how California's wildfire crisis
+      has intensified — and what the land looks like after the flames.
+    </p>
+    <p class="byline">By <a href="https://bikal3.com.np/" target="_blank" rel="noopener">Bikal Shrestha</a></p>
+    <nav class="nav">
+      <a href="/">🔥 Story</a>
+      <a href="/research" aria-current="page">🔬 Research</a>
+      <a href="/explorer">🗺 Explorer</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <div class="section">
+    <div class="eyebrow" style="color:#0284c7;">Full Research</div>
+    <h2 style="font-size:28px;">MTBS Wildfire Analysis</h2>
+    <p class="caption">
+      California · <span data-stat="research.year_min">1984</span>–<span data-stat="research.year_max">2022</span>
+      · Google Earth Engine · Landsat · Sentinel-2 · Open-Meteo
+    </p>
+  </div>
+
+  <section class="section">
+    <h2>01 — About</h2>
+    <p class="caption">
+      This project investigates how satellite-derived vegetation indices and climate data
+      can characterise wildfire burn severity trends across California over 38 years.
+      Data is sourced from the Monitoring Trends in Burn Severity (MTBS) programme,
+      Google Earth Engine, and the Open-Meteo historical weather archive.
+    </p>
+    <p><a class="badge" href="https://github.com/bikal3/mtbs_wildfires" target="_blank" rel="noopener">💻 GitHub Repo</a></p>
+  </section>
+
+  <section class="section">
+    <h2>02 — Data Sources</h2>
+    <div class="grid grid-4">
+      <div><strong style="color:#ea580c;">MTBS</strong>
+        <p class="caption">Burn severity and fire perimeters, 1984–2022, from the USGS composite release.</p></div>
+      <div><strong style="color:#16a34a;">Landsat 8 / Sentinel-2</strong>
+        <p class="caption">Multispectral imagery for EVI and NDVI calculation via Google Earth Engine.</p></div>
+      <div><strong style="color:#2563eb;">Open-Meteo Archive</strong>
+        <p class="caption">ERA5 reanalysis weather (peak temperature, minimum humidity) per fire event.</p></div>
+      <div><strong style="color:#7c3aed;">GeoPandas / pyogrio</strong>
+        <p class="caption">Reads the national MTBS attribute table and filters it to California wildfires.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>03 — Methodology Pipeline</h2>
+    <div class="grid grid-5">
+      <div class="card" style="text-align:center;"><div style="font-size:24px;">🛰</div>
+        <div class="metric"><div class="value" style="font-size:14px;">MTBS Pull</div><div class="label">Perimeter data</div></div></div>
+      <div class="card" style="text-align:center;"><div style="font-size:24px;">☁️</div>
+        <div class="metric"><div class="value" style="font-size:14px;">Cloud Mask</div><div class="label">Landsat / S2</div></div></div>
+      <div class="card" style="text-align:center;"><div style="font-size:24px;">🌿</div>
+        <div class="metric"><div class="value" style="font-size:14px;">EVI / NDVI</div><div class="label">Band calc</div></div></div>
+      <div class="card" style="text-align:center;"><div style="font-size:24px;">🌡</div>
+        <div class="metric"><div class="value" style="font-size:14px;">Weather</div><div class="label">Open-Meteo</div></div></div>
+      <div class="card" style="text-align:center;"><div style="font-size:24px;">📊</div>
+        <div class="metric"><div class="value" style="font-size:14px;">Analysis</div><div class="label">Severity trends</div></div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>04 — Acres Burned &amp; EVI Recovery</h2>
+    <div class="grid grid-2">
+      <div id="chart-acres" class="chart"></div>
+      <div>
+        <div id="chart-evi" class="chart"></div>
+        <p class="disclaimer" style="margin:4px 0 0;">
+          Illustrative reference curves — not computed from this dataset.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>05 — Era Comparison</h2>
+    <p class="caption">How the wildfire crisis has escalated across three distinct eras.</p>
+    <div class="grid grid-3" id="era-cards"></div>
+    <div id="chart-decade" class="chart" style="margin-top:20px;"></div>
+  </section>
+
+  <section class="section">
+    <h2>06 — Fire Weather Analysis</h2>
+    <p class="caption">
+      Each dot is one fire event. Higher temperatures and lower humidity are strongly
+      associated with larger, high-severity fires.
+    </p>
+    <div id="chart-scatter" class="chart"></div>
+    <div id="chart-humidity" class="chart"></div>
+  </section>
+
+  <section class="section">
+    <h2>07 — Largest Events &amp; Fire Season</h2>
+    <div class="grid grid-2">
+      <div id="chart-top" class="chart"></div>
+      <div id="chart-season" class="chart"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>08 — Key Findings</h2>
+    <div id="findings"></div>
+  </section>
+
+  <section class="section">
+    <h2>09 — Tools &amp; Links</h2>
+    <p id="tools"></p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    Data: <a href="https://www.mtbs.gov/" target="_blank" rel="noopener">MTBS</a> ·
+    <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> ·
+    Google Earth Engine &nbsp;·&nbsp;
+    <a href="https://github.com/bikal3/mtbs_wildfires" target="_blank" rel="noopener">Source on GitHub</a>
+  </div>
+</footer>
+
+<script src="/assets/charts.js"></script>
+<script>
+(async function () {
+  const [stats, events] = await Promise.all([
+    loadJSON('/assets/stats.json', 'main'),
+    loadJSON('/assets/events.json', 'main'),
+  ]);
+  if (!stats || !events) return;
+
+  fillStats(stats);
+  sampleNotice(stats, 'main');
+
+  // 05 — era cards
+  document.getElementById('era-cards').innerHTML = stats.eras.map(e =>
+    '<div class="card card-top">' +
+      '<div class="eyebrow">' + e.label + '</div>' +
+      '<div class="grid grid-2">' +
+        '<div class="metric"><div class="label">Events</div><div class="value">' + e.events.toLocaleString() + '</div></div>' +
+        '<div class="metric"><div class="label">Acres (M)</div><div class="value">' + e.acres_m + '</div></div>' +
+        '<div class="metric"><div class="label">Avg size</div><div class="value">' + e.avg_acres.toLocaleString() + '</div></div>' +
+        '<div class="metric"><div class="label">% High</div><div class="value hot">' + e.pct_high + '%</div></div>' +
+      '</div>' +
+    '</div>').join('');
+
+  // 08 — key findings, with the percentage pulled from the real data
+  const findings = [
+    ['🔥', 'High-severity burn area represents ' + stats.research.pct_high + '% of all ' +
+           'California wildfire events in the dataset. Severe events (&gt;100,000 acres) ' +
+           'have become increasingly frequent after 2000.'],
+    ['🌿', 'EVI recovery analysis suggests high-severity burned areas reach only ~36% of ' +
+           'pre-fire vegetation levels after 3 years, compared to &gt;58% for low-severity ' +
+           'areas. (Illustrative reference figures.)'],
+    ['🌡', 'Weather data from the Open-Meteo archive shows fire events with max daily ' +
+           'temperatures above 35°C and minimum relative humidity below 15% correspond to ' +
+           'the highest severity outcomes in the dataset.'],
+    ['📅', 'Fire season has shifted and expanded. Events now ignite year-round, with ' +
+           'October–November fires (driven by Santa Ana and Diablo winds) producing some ' +
+           'of the most destructive outcomes despite lower peak summer temperatures.'],
+  ];
+  document.getElementById('findings').innerHTML = findings.map(f =>
+    '<div class="finding"><div class="icon">' + f[0] + '</div><div class="text">' + f[1] + '</div></div>'
+  ).join('');
+
+  // 09 — tools
+  const tools = ['Python', 'Google Earth Engine', 'pandas', 'pyogrio', 'Plotly.js',
+                 'Leaflet', 'Open-Meteo', 'Cloudflare Pages'];
+  document.getElementById('tools').innerHTML =
+    tools.map(t => '<span class="badge">' + t + '</span>').join(' ');
+
+  // Charts
+  acresByYearChart(document.getElementById('chart-acres'), stats.acres_by_year,
+                   { title: 'Total Acres Burned per Year', xtitle: 'Year' });
+  eviRecoveryChart(document.getElementById('chart-evi'), stats.evi_recovery);
+  decadeSeverityChart(document.getElementById('chart-decade'), stats.decade_severity);
+  tempScatterChart(document.getElementById('chart-scatter'), events);
+  humidityStripChart(document.getElementById('chart-humidity'), events);
+  topFiresChart(document.getElementById('chart-top'), stats.top_fires);
+  fireSeasonChart(document.getElementById('chart-season'), stats.fire_season);
+})();
+</script>
+</body>
+</html>

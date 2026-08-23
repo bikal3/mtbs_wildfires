@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import pytest
-from pages.explorer import filter_events, severity_color, format_acres, compute_map_stats
+from analysis.events import filter_events, severity_color, format_acres, compute_map_stats
 
 
 def _sample_df():

@@ -7,61 +7,10 @@ import streamlit as st
 import plotly.graph_objects as go
 from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH, is_sample_data
 from utils.theme import get_theme
+from analysis.events import compute_map_stats, filter_events, format_acres, severity_color
+from analysis.stats import SEVERITY_ORDER, prepare_evi_recovery_data
 
 EVI_DIR = Path(__file__).parent.parent / 'data' / 'evi_exports'
-
-SEVERITY_ORDER = ['Low', 'Medium', 'High']
-
-
-def severity_color(severity: str) -> str:
-    """Return the hex colour for a severity tier."""
-    return {'Low': '#fbbf24', 'Medium': '#f97316', 'High': '#ef4444'}.get(severity, '#6b7280')
-
-
-def format_acres(acres: float) -> str:
-    """Format acreage as a human-readable string."""
-    if acres >= 1_000_000:
-        return f"{acres / 1_000_000:.1f}M"
-    return f"{acres:,.0f}"
-
-
-def filter_events(
-    df: pd.DataFrame,
-    year_range: tuple,
-    severities: list,
-    min_acres: float,
-) -> pd.DataFrame:
-    """Apply year range, severity, and minimum acreage filters to the events DataFrame."""
-    mask = (
-        (df['year'] >= year_range[0]) &
-        (df['year'] <= year_range[1]) &
-        (df['severity'].isin(severities)) &
-        (df['acres'] >= min_acres)
-    )
-    return df[mask].copy()
-
-
-def compute_map_stats(df: pd.DataFrame) -> dict:
-    """Compute aggregate stats shown in the summary bar."""
-    total_acres = df['acres'].sum()
-    pct_high = len(df[df['severity'] == 'High']) / len(df) * 100 if len(df) > 0 else 0
-    year_min = int(df['year'].min()) if len(df) > 0 else None
-    year_max = int(df['year'].max()) if len(df) > 0 else None
-    year_range_fmt = f"{year_min}\u2013{year_max}" if year_min is not None else '—'
-    return {
-        'event_count': len(df),
-        'total_acres_fmt': format_acres(total_acres),
-        'pct_high_fmt': f"{pct_high:.0f}%",
-        'year_range': year_range_fmt,
-    }
-
-
-def _evi_recovery_data() -> pd.DataFrame:
-    months = list(range(0, 37, 3))
-    low_severity  = [0.55, 0.42, 0.48, 0.51, 0.54, 0.55, 0.56, 0.57, 0.57, 0.58, 0.58, 0.58, 0.59]
-    high_severity = [0.55, 0.10, 0.15, 0.20, 0.25, 0.28, 0.30, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36]
-    return pd.DataFrame({'months': months, 'low': low_severity, 'high': high_severity})
-
 
 def build_folium_map(df: pd.DataFrame, selected_id: str = None) -> folium.Map:
     """Build a Folium map with fire event circle markers."""
@@ -212,10 +161,10 @@ def render_explorer():
 
             # Mini EVI recovery chart
             t = get_theme()
-            evi_df = _evi_recovery_data()
+            evi_df = prepare_evi_recovery_data()
             fig_evi = go.Figure()
-            fig_evi.add_trace(go.Scatter(x=evi_df['months'], y=evi_df['low'], mode='lines', name='Low', line=dict(color='#22c55e', width=1.5)))
-            fig_evi.add_trace(go.Scatter(x=evi_df['months'], y=evi_df['high'], mode='lines', name='High', line=dict(color='#ef4444', width=1.5, dash='dash')))
+            fig_evi.add_trace(go.Scatter(x=evi_df['months_after_fire'], y=evi_df['low_severity'], mode='lines', name='Low', line=dict(color='#22c55e', width=1.5)))
+            fig_evi.add_trace(go.Scatter(x=evi_df['months_after_fire'], y=evi_df['high_severity'], mode='lines', name='High', line=dict(color='#ef4444', width=1.5, dash='dash')))
             fig_evi.update_layout(
                 paper_bgcolor=t['chart_paper'], plot_bgcolor=t['chart_plot'],
                 font_color=t['chart_font'],

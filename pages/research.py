@@ -5,85 +5,17 @@ import plotly.graph_objects as go
 import streamlit as st
 from utils.data_loader import load_data, DATA_PATH, SAMPLE_DATA_PATH, is_sample_data
 from utils.theme import get_theme
+from analysis.stats import (
+    SEVERITY_COLORS,
+    compute_era_stats,
+    compute_research_stats,
+    prepare_decade_severity,
+    prepare_evi_recovery_data,
+    prepare_fire_season,
+    prepare_severity_chart_data,
+    prepare_top_fires,
+)
 
-
-SEVERITY_COLORS = {'Low': '#22c55e', 'Medium': '#f97316', 'High': '#ef4444'}
-
-
-# ── Data helpers ──────────────────────────────────────────────────────────────
-
-def prepare_severity_chart_data(df: pd.DataFrame) -> pd.DataFrame:
-    return df.groupby('year')['acres'].sum().reset_index()
-
-
-def prepare_evi_recovery_data() -> pd.DataFrame:
-    months = list(range(0, 37, 3))
-    low_severity  = [0.55, 0.42, 0.48, 0.51, 0.54, 0.55, 0.56, 0.57, 0.57, 0.58, 0.58, 0.58, 0.59]
-    high_severity = [0.55, 0.10, 0.15, 0.20, 0.25, 0.28, 0.30, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36]
-    return pd.DataFrame({'months_after_fire': months,
-                         'low_severity': low_severity,
-                         'high_severity': high_severity})
-
-
-def compute_research_stats(df: pd.DataFrame) -> dict:
-    total_acres = df['acres'].sum()
-    pct_high = round(len(df[df['severity'] == 'High']) / len(df) * 100, 1) if len(df) > 0 else 0.0
-    return {
-        'total_events': len(df),
-        'total_acres_m': float(round(total_acres / 1_000_000, 1)),
-        'pct_high': pct_high,
-        'year_min': int(df['year'].min()) if len(df) > 0 else 0,
-        'year_max': int(df['year'].max()) if len(df) > 0 else 0,
-    }
-
-
-def prepare_decade_severity(df: pd.DataFrame) -> pd.DataFrame:
-    """Count Low/Medium/High events per decade."""
-    d = df.copy()
-    d['decade'] = pd.cut(d['year'], bins=[1983, 1999, 2009, 2022],
-                         labels=['1984–1999', '2000–2009', '2010–2022'])
-    return (d.groupby(['decade', 'severity'], observed=True)
-             .size().reset_index(name='count'))
-
-
-def compute_era_stats(df: pd.DataFrame) -> list:
-    """Return per-era dicts for the comparison metrics grid."""
-    eras = [('1984–1999', 1984, 1999), ('2000–2009', 2000, 2009), ('2010–2022', 2010, 2022)]
-    result = []
-    for label, y0, y1 in eras:
-        sub = df[(df['year'] >= y0) & (df['year'] <= y1)]
-        if len(sub) == 0:
-            result.append({'label': label, 'events': 0, 'acres_m': 0.0,
-                           'avg_acres': 0, 'pct_high': 0.0})
-            continue
-        result.append({
-            'label': label,
-            'events': len(sub),
-            'acres_m': round(sub['acres'].sum() / 1_000_000, 1),
-            'avg_acres': int(sub['acres'].mean()),
-            'pct_high': round(len(sub[sub['severity'] == 'High']) / len(sub) * 100, 1),
-        })
-    return result
-
-
-def prepare_top_fires(df: pd.DataFrame, n: int = 10) -> pd.DataFrame:
-    top = df.nlargest(n, 'acres')[['event_name', 'year', 'acres', 'severity']].copy()
-    top['label'] = top['event_name'].str.title() + ' (' + top['year'].astype(str) + ')'
-    return top.sort_values('acres')
-
-
-def prepare_fire_season(df: pd.DataFrame) -> pd.DataFrame:
-    """Fire count by ignition month."""
-    d = df.copy()
-    d['month'] = pd.to_datetime(d['ig_date']).dt.month
-    month_names = {1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun',
-                   7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec'}
-    counts = (pd.DataFrame({'month': range(1, 13)})
-              .merge(d.groupby('month').size().reset_index(name='count'), on='month', how='left')
-              .fillna(0))
-    counts['month_name'] = counts['month'].map(month_names)
-    counts['count'] = counts['count'].astype(int)
-    return counts
 
 
 # ── Render ────────────────────────────────────────────────────────────────────
