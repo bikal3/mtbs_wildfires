@@ -6,12 +6,15 @@ Usage:
     python scripts/preprocess_data.py
 """
 import os
-import sys
 import botocore
 import botocore.config
 import boto3
+import numpy as np
 import pandas as pd
 import geopandas as gpd
+import openmeteo_requests
+import requests_cache
+from retry_requests import retry
 from datetime import datetime, timedelta, timezone
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,8 +25,13 @@ SUMMARY_COLUMNS = [
     'max_temp_c', 'min_humidity_pct',
 ]
 
-# src/utils path — added to sys.path so lazy imports inside functions work
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive'
+
+# Historical weather never changes, so the cache never expires — re-runs are free.
+_cache_session = requests_cache.CachedSession(
+    os.path.join(PROJECT_ROOT, '.cache', 'openmeteo'), expire_after=-1)
+_retry_session = retry(_cache_session, retries=5, backoff_factor=0.4)
+_openmeteo = openmeteo_requests.Client(session=_retry_session)
 
 
 def load_mtbs_california(local_path: str) -> gpd.GeoDataFrame:
@@ -65,29 +73,35 @@ def classify_severity(acres: float) -> str:
 
 def get_event_weather(lat: float, lon: float, ig_date_ms: int) -> dict:
     """
-    Fetch peak temperature (C) and minimum relative humidity (%)
-    for a window from 3 days before to 14 days after the ignition date (17 days total).
-    Returns dict with keys max_temp_c and min_humidity_pct.
+    Peak temperature (C) and minimum relative humidity (%) over a window running
+    from 3 days before to 14 days after ignition (18 days inclusive).
+
+    Raises on failure. Callers decide what an individual failure means — see
+    build_summary, which aborts only if the failure *rate* is systemic.
     """
-    try:
-        ig_date = datetime.fromtimestamp(ig_date_ms / 1000, tz=timezone.utc).replace(tzinfo=None)
-        start = (ig_date - timedelta(days=3)).strftime('%Y-%m-%d')
-        end = (ig_date + timedelta(days=14)).strftime('%Y-%m-%d')
-        from utils.openmeteo_utils import fetch_weather_data  # noqa: PLC0415
-        df = fetch_weather_data(
-            latitude=lat,
-            longitude=lon,
-            start_date=start,
-            end_date=end,
-            daily_variables=['temperature_2m_max', 'relative_humidity_2m_min'],
-        )
-        return {
-            'max_temp_c': round(float(df['temperature_2m_max'].max()), 1),
-            'min_humidity_pct': round(float(df['relative_humidity_2m_min'].min()), 1),
-        }
-    except Exception as exc:
-        print(f'WARNING: weather fetch failed for ({lat}, {lon}, {ig_date_ms}): {exc}')
-        return {'max_temp_c': None, 'min_humidity_pct': None}
+    ig_date = datetime.fromtimestamp(ig_date_ms / 1000, tz=timezone.utc).replace(tzinfo=None)
+    start = (ig_date - timedelta(days=3)).strftime('%Y-%m-%d')
+    end = (ig_date + timedelta(days=14)).strftime('%Y-%m-%d')
+
+    responses = _openmeteo.weather_api(ARCHIVE_URL, params={
+        'latitude': lat,
+        'longitude': lon,
+        'start_date': start,
+        'end_date': end,
+        'daily': ['temperature_2m_max', 'relative_humidity_2m_min'],
+        'timezone': 'GMT',
+    })
+    daily = responses[0].Daily()
+    temps = daily.Variables(0).ValuesAsNumpy()
+    humidity = daily.Variables(1).ValuesAsNumpy()
+
+    if np.all(np.isnan(temps)) or np.all(np.isnan(humidity)):
+        raise ValueError(f'archive API returned no usable data for ({lat}, {lon}) {start}..{end}')
+
+    return {
+        'max_temp_c': round(float(np.nanmax(temps)), 1),
+        'min_humidity_pct': round(float(np.nanmin(humidity)), 1),
+    }
 
 
 def build_summary(ca_fires: gpd.GeoDataFrame) -> pd.DataFrame:

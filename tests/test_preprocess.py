@@ -73,3 +73,26 @@ def test_build_summary_values():
     assert row['severity'] == 'High'
     assert row['max_temp_c'] == 38.5
     assert row['min_humidity_pct'] == 11.0
+
+
+def test_archive_url_is_the_archive_endpoint():
+    """The historical-forecast endpoint only serves 2016+; this dataset starts in 1984."""
+    from scripts.preprocess_data import ARCHIVE_URL
+    assert ARCHIVE_URL == 'https://archive-api.open-meteo.com/v1/archive'
+    assert 'historical-forecast' not in ARCHIVE_URL
+
+
+def test_get_event_weather_raises_instead_of_returning_none():
+    """A failed fetch must raise, not silently produce a null row."""
+    from scripts import preprocess_data
+
+    def boom(*args, **kwargs):
+        raise RuntimeError('api down')
+
+    original = preprocess_data._openmeteo.weather_api
+    preprocess_data._openmeteo.weather_api = boom
+    try:
+        with pytest.raises(RuntimeError):
+            preprocess_data.get_event_weather(34.2, -117.72, 1625184000000)
+    finally:
+        preprocess_data._openmeteo.weather_api = original
