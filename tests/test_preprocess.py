@@ -96,3 +96,29 @@ def test_get_event_weather_raises_instead_of_returning_none():
             preprocess_data.get_event_weather(34.2, -117.72, 1625184000000)
     finally:
         preprocess_data._openmeteo.weather_api = original
+
+
+def test_preprocess_imports_without_dask_or_leafmap():
+    """The script must not depend on dask_geopandas/leafmap, which are not installed."""
+    import importlib
+    import scripts.preprocess_data as pp
+    importlib.reload(pp)
+    assert not hasattr(pp, 'get_mtbs_shp')
+    assert hasattr(pp, 'download_mtbs_shapefile')
+
+
+def test_ca_filter_keeps_only_california_wildfires():
+    from shapely.geometry import Polygon
+    from scripts.preprocess_data import filter_california_wildfires
+
+    poly = Polygon([(-120, 38), (-119, 38), (-119, 39), (-120, 39)])
+    gdf = gpd.GeoDataFrame(
+        {
+            'Event_ID':   ['CA111', 'OR222', 'CA333'],
+            'Incid_Type': ['Wildfire', 'Wildfire', 'Prescribed Fire'],
+        },
+        geometry=[poly, poly, poly],
+        crs='EPSG:4326',
+    )
+    result = filter_california_wildfires(gdf)
+    assert list(result['Event_ID']) == ['CA111']

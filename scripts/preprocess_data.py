@@ -34,27 +34,63 @@ _retry_session = retry(_cache_session, retries=5, backoff_factor=0.4)
 _openmeteo = openmeteo_requests.Client(session=_retry_session)
 
 
-def load_mtbs_california(local_path: str) -> gpd.GeoDataFrame:
-    """
-    Download MTBS shapefile from AWS public bucket (anonymous access)
-    and return a GeoDataFrame filtered to California wildfires.
-    """
-    # Lazy imports: dask_geopandas and leafmap are only needed at runtime
-    from utils.source_coop_utils import get_mtbs_shp  # noqa: PLC0415
+MTBS_BUCKET = 'cboettig'
+MTBS_PREFIX = 'fire/USGS-MTBS/'
+MTBS_LAYER = 'mtbs_perims_DD'
 
-    s3_client = boto3.client(
+
+def download_mtbs_shapefile(local_path: str) -> str:
+    """
+    Download every sidecar file for the MTBS perimeter layer from the public S3
+    bucket (anonymous access) and return the path to the .shp.
+    Files already on disk are skipped, so re-runs are cheap.
+    """
+    s3 = boto3.client(
         's3',
         region_name='us-east-1',
         config=botocore.config.Config(signature_version=botocore.UNSIGNED),
     )
-    ddf = get_mtbs_shp('mtbs_perims_DD', s3_client, local_path)
-    gdf = ddf.compute()
-    ca_fires = gdf[
+    paginator = s3.get_paginator('list_objects_v2')
+    keys = [
+        obj['Key']
+        for page in paginator.paginate(Bucket=MTBS_BUCKET, Prefix=f'{MTBS_PREFIX}{MTBS_LAYER}')
+        for obj in page.get('Contents', [])
+    ]
+    if not keys:
+        raise RuntimeError(
+            f'No MTBS files found at s3://{MTBS_BUCKET}/{MTBS_PREFIX}{MTBS_LAYER}. '
+            'The mirror may have moved — check https://www.mtbs.gov/direct-download'
+        )
+
+    for key in keys:
+        target = os.path.join(local_path, key.split('/')[-1])
+        if os.path.exists(target):
+            print(f'  cached  {os.path.basename(target)}')
+            continue
+        print(f'  fetch   {os.path.basename(target)}')
+        s3.download_file(Bucket=MTBS_BUCKET, Key=key, Filename=target)
+
+    shp = os.path.join(local_path, f'{MTBS_LAYER}.shp')
+    if not os.path.exists(shp):
+        raise RuntimeError(f'Downloaded MTBS files but {shp} is missing.')
+    return shp
+
+
+def filter_california_wildfires(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Keep only California (Event_ID prefix 'CA') rows of type 'Wildfire'."""
+    return gdf[
         (gdf['Event_ID'].str.startswith('CA')) &
         (gdf['Incid_Type'] == 'Wildfire')
     ].copy()
-    ca_fires = ca_fires.to_crs('EPSG:4326')
-    return ca_fires
+
+
+def load_mtbs_california(local_path: str) -> gpd.GeoDataFrame:
+    """Download, read, filter to CA wildfires, and normalise CRS to EPSG:4326."""
+    shp = download_mtbs_shapefile(local_path)
+    print(f'Reading {shp} ...')
+    gdf = gpd.read_file(shp)
+    print(f'  {len(gdf):,} total MTBS records')
+    return filter_california_wildfires(gdf).to_crs('EPSG:4326')
 
 
 def classify_severity(acres: float) -> str:
@@ -109,6 +145,9 @@ def build_summary(ca_fires: gpd.GeoDataFrame) -> pd.DataFrame:
     Build the summary DataFrame from a California MTBS GeoDataFrame.
     Calls get_event_weather for each row — expected to be slow on full dataset.
     """
+    import warnings
+    warnings.filterwarnings('ignore', message='Geometry is in a geographic CRS')
+
     records = []
     for _, row in ca_fires.iterrows():
         centroid = row.geometry.centroid
