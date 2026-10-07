@@ -38,5 +38,5 @@ def compute_map_stats(df: pd.DataFrame) -> dict:
         'event_count': len(df),
         'total_acres_fmt': format_acres(total_acres),
         'pct_high_fmt': f"{pct_high:.0f}%",
-        'year_range': f"{year_min}–{year_max}" if year_min is not None else '—',
+        'year_range': f"{year_min}–{year_max}" if year_min is not None else 'n/a',
     }

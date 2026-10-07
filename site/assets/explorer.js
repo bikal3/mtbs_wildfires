@@ -19,7 +19,7 @@ function filterEvents(events, yearFrom, yearTo, severities, minAcres) {
 /** Mirrors analysis.events.compute_map_stats. */
 function computeMapStats(rows) {
   if (rows.length === 0) {
-    return { event_count: 0, total_acres_fmt: '0', pct_high_fmt: '0%', year_range: '—' };
+    return { event_count: 0, total_acres_fmt: '0', pct_high_fmt: '0%', year_range: 'n/a' };
   }
   const totalAcres = rows.reduce((sum, e) => sum + e.acres, 0);
   const highCount = rows.filter(e => e.severity === 'High').length;
@@ -81,9 +81,9 @@ function markerRadius(acres) {
         '<div class="metric"><div class="label">Acres</div><div class="value">' + formatAcres(e.acres) + '</div></div>' +
         '<div class="metric"><div class="label">Severity</div><div class="value">' + e.severity + '</div></div>' +
         '<div class="metric"><div class="label">Max temp</div><div class="value">' +
-          (e.max_temp_c === null ? '—' : e.max_temp_c + '°C') + '</div></div>' +
+          (e.max_temp_c === null ? 'n/a' : e.max_temp_c + '°C') + '</div></div>' +
         '<div class="metric"><div class="label">Min humidity</div><div class="value">' +
-          (e.min_humidity_pct === null ? '—' : e.min_humidity_pct + '%') + '</div></div>' +
+          (e.min_humidity_pct === null ? 'n/a' : e.min_humidity_pct + '%') + '</div></div>' +
       '</div>' +
       '<p class="caption" style="margin:0 0 10px;">Ignition: ' + e.ig_date + '</p>' +
       '<div id="detail-evi" class="chart"></div>' +

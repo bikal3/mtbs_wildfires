@@ -84,7 +84,7 @@ def test_build_events_emits_no_nan_literal():
 
 
 def test_build_stats_evi_is_labelled_illustrative():
-    """The EVI curves are hardcoded, not derived — the site must not imply otherwise."""
+    """The EVI curves are hardcoded, not derived; the site must not imply otherwise."""
     evi = build_stats(_sample_df(), is_sample=False)['evi_recovery']
     assert evi['illustrative'] is True
     assert len(evi['months']) == len(evi['low']) == len(evi['high'])

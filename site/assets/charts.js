@@ -93,7 +93,7 @@ function decadeSeverityChart(el, rows) {
     marker: { color: SEVERITY_COLORS[sev] },
   }));
   Plotly.newPlot(el, traces, layout({
-    title: { text: 'Fire Count by Severity — Three Eras', font: { color: T.title, size: 14 } },
+    title: { text: 'Fire Count by Severity: Three Eras', font: { color: T.title, size: 14 } },
     barmode: 'group',
     height: 300,
     yaxis: { gridcolor: T.grid, title: 'Number of fires' },
@@ -203,6 +203,6 @@ function fillStats(stats) {
 function sampleNotice(stats, targetId) {
   if (!stats.is_sample) return;
   document.getElementById(targetId).insertAdjacentHTML('afterbegin',
-    '<div class="note"><strong>Sample dataset</strong> — showing ' + stats.event_count +
+    '<div class="note"><strong>Sample dataset</strong>: showing ' + stats.event_count +
     ' representative events, not the full record.</div>');
 }

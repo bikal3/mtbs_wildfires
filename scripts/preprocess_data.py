@@ -34,7 +34,7 @@ MAX_YEAR = 2022
 # ── Open-Meteo ────────────────────────────────────────────────────────────────
 ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive'
 
-# Historical weather never changes, so the cache never expires — re-runs are free.
+# Historical weather never changes, so the cache never expires, so re-runs are free.
 _cache_session = requests_cache.CachedSession(
     os.path.join(PROJECT_ROOT, '.cache', 'openmeteo'), expire_after=-1)
 _retry_session = retry(_cache_session, retries=5, backoff_factor=0.4)
@@ -49,7 +49,7 @@ MTBS_URL = ('https://edcintl.cr.usgs.gov/downloads/sciweb1/shared/MTBS_Fire/data
 MTBS_ZIP = 'mtbs_perimeter_data.zip'
 
 # MTBS supplies the burn-boundary centre directly, so the 616 MB geometry never
-# needs reading — only the 43 MB attribute table.
+# needs reading, only the 43 MB attribute table.
 MTBS_COLUMNS = ['event_id', 'incid_name', 'incid_type',
                 'burnbndac', 'ig_date', 'burnbndlat', 'burnbndlon']
 
@@ -147,7 +147,7 @@ def get_event_weather(lat: float, lon: float, ig_date) -> dict:
     Peak temperature (C) and minimum relative humidity (%) over a window running
     from 3 days before to 14 days after ignition (18 days inclusive).
 
-    Raises on failure. Callers decide what an individual failure means — see
+    Raises on failure. Callers decide what an individual failure means; see
     build_summary, which aborts only if the failure *rate* is systemic.
     """
     start = (ig_date - timedelta(days=3)).strftime('%Y-%m-%d')
@@ -177,7 +177,7 @@ def get_event_weather(lat: float, lon: float, ig_date) -> dict:
 def build_summary(ca_fires: pd.DataFrame, max_failure_pct: float = 5.0) -> pd.DataFrame:
     """
     Build the summary DataFrame from the filtered California MTBS frame.
-    One weather API call per row — slow on the full dataset.
+    One weather API call per row, slow on the full dataset.
 
     Individual failures are recorded as null and reported. If more than
     max_failure_pct of events fail, the run aborts: that means something is
@@ -221,7 +221,7 @@ def build_summary(ca_fires: pd.DataFrame, max_failure_pct: float = 5.0) -> pd.Da
             print(f'  {event_id}: {msg}')
         if pct > max_failure_pct:
             raise RuntimeError(
-                f'Weather failure rate {pct:.1f}% exceeds {max_failure_pct}% — aborting. '
+                f'Weather failure rate {pct:.1f}% exceeds {max_failure_pct}%, aborting. '
                 'This indicates a systemic problem, not transient errors.'
             )
 

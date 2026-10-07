@@ -1,25 +1,25 @@
 # California Wildfire Analysis (1984–2022)
 
-An end-to-end data science project combining satellite imagery, climate records, and 38 years of MTBS fire data to understand how California's wildfire crisis has intensified — and what the land looks like after the flames.
+An end-to-end data science project combining satellite imagery, climate records, and 38 years of MTBS fire data to understand how California's wildfire crisis has intensified, and what the land looks like after the flames.
 
 ## Live Site
 
 **[mtbs-wildfires.bikal3.com.np](https://mtbs-wildfires.bikal3.com.np)**
 
-A static site — no server, no cold start, nothing to wake up.
+A static site: no server, no cold start, nothing to wake up.
 
 | Page | Contents |
 | --- | --- |
-| [Story](https://mtbs-wildfires.bikal3.com.np/) | Narrative overview — trends, vegetation recovery, key findings |
-| [Research](https://mtbs-wildfires.bikal3.com.np/research) | Statistical analysis — era comparisons, fire weather, largest events, seasonality |
-| [Explorer](https://mtbs-wildfires.bikal3.com.np/explorer) | Interactive map — filter by year, severity, and acreage; click a fire for details |
+| [Story](https://mtbs-wildfires.bikal3.com.np/) | Narrative overview: trends, vegetation recovery, key findings |
+| [Research](https://mtbs-wildfires.bikal3.com.np/research) | Statistical analysis: era comparisons, fire weather, largest events, seasonality |
+| [Explorer](https://mtbs-wildfires.bikal3.com.np/explorer) | Interactive map: filter by year, severity, and acreage; click a fire for details |
 
 ## Overview
 
 Two parts:
 
-- **Static site** (`site/`) — vanilla HTML/CSS/JS with vendored Plotly and Leaflet, built from JSON that two offline Python scripts generate
-- **Jupyter notebooks** (`src/`) — the original analysis work: EVI retrieval, MTBS exploration, weather data
+- **Static site** (`site/`): vanilla HTML/CSS/JS with vendored Plotly and Leaflet, built from JSON that two offline Python scripts generate
+- **Jupyter notebooks** (`src/`): the original analysis work, covering EVI retrieval, MTBS exploration, and weather data
 
 The dataset covers **1,683 California wildfire events, 1984–2022**, totalling 23.9M acres.
 
@@ -41,14 +41,14 @@ python scripts/build_site.py --sample    # build against the 50-event sample ins
 ### Sources
 
 **Fire perimeters** come from the official USGS MTBS composite release
-(`mtbs_perimeter_data.zip`, ~390 MB). Only the attribute table is read — MTBS
+(`mtbs_perimeter_data.zip`, ~390 MB). Only the attribute table is read; MTBS
 supplies `burnbndlat`/`burnbndlon` directly, so the 616 MB geometry is never
 touched and no geospatial stack is needed beyond `pyogrio`.
 
 **Weather** comes from the Open-Meteo **archive** API
 (`archive-api.open-meteo.com`, ERA5, 1940–present). Note that the
 *historical-forecast* endpoint only serves 2016 onward and cannot cover this
-dataset — using it silently yields null weather for every pre-2016 fire.
+dataset; using it silently yields null weather for every pre-2016 fire.
 
 `preprocess_data.py` tracks per-event failures and aborts if more than 5% fail,
 so a systemic problem stops the run instead of producing a CSV full of nulls.
@@ -69,7 +69,7 @@ python -m http.server 8000 --directory site
 ```
 
 Then open <http://localhost:8000>. Use `/research.html` and `/explorer.html`
-locally — the extensionless URLs are a Cloudflare Pages feature.
+locally; the extensionless URLs are a Cloudflare Pages feature.
 
 ## Tests
 
@@ -107,7 +107,7 @@ independently of how it is rendered.
 
 ## Deployment
 
-Cloudflare Pages, project `mtbs-wildfires`, via **direct upload** — the project
+Cloudflare Pages, project `mtbs-wildfires`, via **direct upload**; the project
 is not connected to Git, so pushing to GitHub does **not** deploy. To publish:
 
 ```bash
@@ -121,12 +121,12 @@ Custom domains. Either one alone returns an error.
 
 ## Tech Stack
 
-- **Plotly.js** — interactive charts (basic bundle, vendored)
-- **Leaflet** — interactive map, canvas renderer (vendored)
-- **pandas / pyogrio** — data processing
-- **Cloudflare Pages** — hosting
-- **MTBS** — Monitoring Trends in Burn Severity (USGS)
-- **Open-Meteo** — historical weather archive
+- **Plotly.js**: interactive charts (basic bundle, vendored)
+- **Leaflet**: interactive map, canvas renderer (vendored)
+- **pandas / pyogrio**: data processing
+- **Cloudflare Pages**: hosting
+- **MTBS**: Monitoring Trends in Burn Severity (USGS)
+- **Open-Meteo**: historical weather archive
 
 ## A Note on the EVI Figures
 

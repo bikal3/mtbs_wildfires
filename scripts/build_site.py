@@ -43,7 +43,7 @@ EVENT_FIELDS = [
 
 def load_csv(use_sample: bool) -> pd.DataFrame:
     """
-    Load the summary CSV. Fails loudly rather than falling back to the sample —
+    Load the summary CSV. Fails loudly rather than falling back to the sample;
     silently shipping 50 events is the exact failure this migration exists to fix.
     """
     path = SAMPLE_CSV if use_sample else FULL_CSV

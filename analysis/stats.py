@@ -97,7 +97,7 @@ def prepare_evi_recovery_data() -> pd.DataFrame:
     """
     Illustrative 3-year EVI recovery curves.
 
-    These are hardcoded reference values, NOT computed from this dataset — the
+    These are hardcoded reference values, NOT computed from this dataset; the
     per-event EVI work lives in src/evi.ipynb and was never wired through.
     Every chart built from this must be labelled as illustrative.
     """
